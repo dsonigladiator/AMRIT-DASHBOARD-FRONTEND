@@ -1,0 +1,21 @@
+.drillup-btn {
+  position: absolute;
+  top: 20%;
+  left: 5%;
+  transform: translateY(-50%);
+  z-index: 999;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.visible {
+  display: block;
+}
+
+.hidden {
+  display: none;
+}
