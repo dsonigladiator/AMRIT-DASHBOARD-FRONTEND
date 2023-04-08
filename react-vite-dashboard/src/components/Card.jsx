@@ -25,14 +25,14 @@ const Card = () => {
             </div>
             <div className="data-container">
                 <div className="data-row">
-                    <div className="data-item"><div>PM2.5</div><div>14</div></div>
-                    <div className="data-item"><div>PM10</div><div>22</div></div>
+                    <div className="data-item"><div>PM2.5</div><div>14.02</div></div>
+                    <div className="data-item"><div>PM10</div><div>22.93</div></div>
                     <div className="data-item"><div>SO2</div><div>13.2</div></div>
                 </div>
                 <div className="data-row">
-                    <div className="data-item">NO2</div>
-                    <div className="data-item">O3</div>
-                    <div className="data-item">CO</div>
+                    <div className="data-item"><div>NO2</div><div>8.78</div></div>
+                    <div className="data-item"><div>O3</div><div>38.34</div></div>
+                    <div className="data-item"><div>CO</div><div>44.32</div></div>
                 </div>
             </div>
         </div>

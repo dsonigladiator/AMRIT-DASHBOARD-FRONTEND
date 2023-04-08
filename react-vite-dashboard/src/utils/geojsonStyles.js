@@ -78,22 +78,44 @@ export const indiaGeoJSONStyleV1 = (feature) => {
 
 // style for each Division
 export const divisionGeoJSONStyleV1 = (feature) => {
-    return {
-        fillColor: getColor(feature.properties.param_value),
-        color: "black",
-        weight: 1,
-        opacity: 1,
-        fillOpacity: 0.9,
-    };
+    if (feature.properties.param_value
+    ) {
+        return {
+            fillColor: getColor(feature.properties.param_value),
+            color: "black",
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.9,
+        };
+    } else {
+        return {
+            fillColor: "#ffe6f3",
+            color: "black",
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.9,
+        };
+    }
 };
 
 // Style for each district
 export const districtGeoJSONStyleV1 = (feature) => {
-    return {
-        fillColor: getColor(feature.properties.param_value),
-        color: "black",
-        weight: 1,
-        opacity: 1,
-        fillOpacity: 0.9,
-    };
+    if (feature.properties.param_value
+    ) {
+        return {
+            fillColor: getColor(feature.properties.param_value),
+            color: "black",
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.9,
+        };
+    } else {
+        return {
+            fillColor: "#e6ccff",
+            color: "black",
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.9,
+        };
+    }
 };
