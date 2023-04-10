@@ -1,11 +1,10 @@
-AMRIT-DASHBOARD-FRONTEND
+## AMRIT-DASHBOARD-FRONTEND
 <p align="center">
   <img src="https://img.shields.io/badge/Made%20with-React-blue.svg" alt="Made with React">
 </p>
 This repository contains the frontend code for the Amrit Dashboard Project, which is built using React.
 
-
-Getting started
+## Getting started
 
 Before you begin, make sure you have installed the latest version of Node.js and Yarn on your machine.
 
