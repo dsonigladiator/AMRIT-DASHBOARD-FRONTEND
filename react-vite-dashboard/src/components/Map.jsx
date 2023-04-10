@@ -43,6 +43,7 @@ function LeafletMap(props) {
   const { setSelectedFeature } = useContext(DataContext);
   const { setSelectedFeatureName } = useContext(DataContext);
   const { layerNo, setLayerNo } = useContext(DataContext);
+  const { isLoading, setIsLoading } = useContext(DataContext);
   // set initial currentLayer to "India" (State Level)
   const [currentLayer, setCurrentLayer] = useState("State");
 
@@ -52,7 +53,7 @@ function LeafletMap(props) {
   // some useState variables
   const [drillDownState, setDrillDownState] = useState([]);
   const [hasDrilledDown, setHasDrilledDown] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [filteredDivisionsGeojson, setFilteredDivisionGeojson] = useState(null);
   const [filteredDistrictsGeojson, setFilteredDistrictsGeojson] =

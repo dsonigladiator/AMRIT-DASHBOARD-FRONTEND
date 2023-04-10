@@ -122,6 +122,8 @@ export default function App() {
         setSelectedPollutant,
         layerNo,
         setLayerNo,
+        isLoading,
+        setIsLoading,
       }}
     >
       <div className="App">

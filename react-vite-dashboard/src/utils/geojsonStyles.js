@@ -10,7 +10,7 @@ import getColor from "./getColor";
 
 // define geojson style for each State
 export const indiaGeoJSONStyleV1 = (feature) => {
-    if (feature.properties.param_values && feature.properties.param_values["pm2.5cnc"]) {
+    if (feature.properties.param_values) {
         return {
             fillColor: getColor(feature.properties.param_values["pm2.5cnc"]),
             color: "black",
