@@ -21,7 +21,7 @@ export default function App() {
   const [selectedFeature, setSelectedFeature] = useState(null);
   const [selectedFeatureName, setSelectedFeatureName] =
     useState("Select feature");
-  const [pollutant, setPollutant] = useState("PM2.5");
+  const [selectedPollutant, setSelectedPollutant] = useState("pm2.5cnc");
   const [layerNo, setLayerNo] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -118,8 +118,8 @@ export default function App() {
         setSelectedFeature,
         selectedFeatureName,
         setSelectedFeatureName,
-        pollutant,
-        setPollutant,
+        selectedPollutant,
+        setSelectedPollutant,
         layerNo,
         setLayerNo,
       }}

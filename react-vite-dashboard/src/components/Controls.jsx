@@ -7,12 +7,18 @@ import "../styles/Controls.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Controls = () => {
+  const {
+    currentDate,
+    setCurrentDate,
+    selectedPollutant,
+    setSelectedPollutant,
+  } = useContext(DataContext);
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    // TODO: handle form submission
+    const selectedOption = event.target.elements["air-quality"].value;
+    setSelectedPollutant(selectedOption);
   };
-
-  const { currentDate, setCurrentDate } = useContext(DataContext);
 
   return (
     <form className="Controls" onSubmit={handleSubmit}>
@@ -40,7 +46,7 @@ const Controls = () => {
           }}
         />
 
-        <label htmlFor="air-quality">Sampling Period</label>
+        <label htmlFor="sampling-period">Sampling Period</label>
         <select id="sampling-period" name="sampling-period">
           <option value="hour" defaultValue>
             Hour
