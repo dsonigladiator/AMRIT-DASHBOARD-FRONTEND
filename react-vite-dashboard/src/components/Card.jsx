@@ -1,42 +1,75 @@
 import React, { useContext } from "react";
 import DataContext from "../contexts/Data.Context.js";
 import "../styles/Card.css";
+import roundOffDigits from "../utils/roundOffDigits.js";
 
 const Card = () => {
-    const { selectedFeature } = useContext(DataContext);
+  const { selectedFeatureName } = useContext(DataContext);
+  const { selectedFeature } = useContext(DataContext);
 
-    return (
-        <div className="card-container" style={{ backgroundColor: "#ffe6cc" }}>
-            <h1>{selectedFeature}</h1>
-            <div className="card-item">
-                <label>Sensor Details</label>
-                <span>4</span>
-            </div>
-            <div className="card-item">
-                <label>Last Update Sensor</label>
-                <span>Shipra Mall</span>
-            </div>
-            <div className="card-item">
-                <label>Most Polluted Area</label>
-                <span>Shipra Mall</span>
-            </div>
-            <div className="card-item">
-                <label>Statistics</label>
-            </div>
-            <div className="data-container">
-                <div className="data-row">
-                    <div className="data-item"><div>PM2.5</div><div>14.02</div></div>
-                    <div className="data-item"><div>PM10</div><div>22.93</div></div>
-                    <div className="data-item"><div>SO2</div><div>13.2</div></div>
-                </div>
-                <div className="data-row">
-                    <div className="data-item"><div>NO2</div><div>8.78</div></div>
-                    <div className="data-item"><div>O3</div><div>38.34</div></div>
-                    <div className="data-item"><div>CO</div><div>44.32</div></div>
-                </div>
-            </div>
+  // function to get pollutant value from selectedFeature
+  const getPollutantValue = (propertyName) => {
+    const propertyValue =
+      selectedFeature?.properties?.param_values?.[propertyName];
+    return propertyValue ? roundOffDigits(propertyValue) : "-";
+  };
+
+  // function to get number of sensors from selectedFeature
+  const getNumberOfSensors = () => {
+    const numberOfSensors = selectedFeature?.properties?.number_of_sensors;
+    return numberOfSensors ? numberOfSensors : "-";
+  };
+
+  return (
+    <div className="card-container" style={{ backgroundColor: "#ffe6cc" }}>
+      <h1>{selectedFeatureName}</h1>
+      <div className="card-item">
+        <label>Number of Sensors</label>
+        <span>{getNumberOfSensors()}</span>
+      </div>
+      <div className="card-item">
+        <label>Last Update Sensor</label>
+        <span>Shipra Mall</span>
+      </div>
+      <div className="card-item">
+        <label>Most Polluted Area</label>
+        <span>Shipra Mall</span>
+      </div>
+      <div className="card-item">
+        <label>Statistics</label>
+      </div>
+      <div className="data-container">
+        <div className="data-row">
+          <div className="data-item">
+            <div>PM2.5</div>
+            <div>{getPollutantValue("pm2.5cnc")}</div>
+          </div>
+          <div className="data-item">
+            <div>PM10</div>
+            <div>{getPollutantValue("pm10cnc")}</div>
+          </div>
+          <div className="data-item">
+            <div>SO2</div>
+            <div>{getPollutantValue("so2ppb")}</div>
+          </div>
         </div>
-    );
+        <div className="data-row">
+          <div className="data-item">
+            <div>NO2</div>
+            <div>{getPollutantValue("no2ppb")}</div>
+          </div>
+          <div className="data-item">
+            <div>O3</div>
+            <div>{getPollutantValue("o3ppb")}</div>
+          </div>
+          <div className="data-item">
+            <div>CO</div>
+            <div>{getPollutantValue("co")}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Card;

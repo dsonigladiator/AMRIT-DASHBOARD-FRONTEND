@@ -39,6 +39,7 @@ var filteredDivisionsGeojson;
 function LeafletMap(props) {
   const { statesData } = props;
   const { setSelectedFeature } = useContext(DataContext);
+  const { setSelectedFeatureName } = useContext(DataContext);
   const { layerNo, setLayerNo } = useContext(DataContext);
   // set initial currentLayer to "India" (State Level)
   const [currentLayer, setCurrentLayer] = useState("State");
@@ -71,6 +72,7 @@ function LeafletMap(props) {
   // function to handle single click on feature
   function onFeatureClick(e) {
     var featureName;
+    var selectedFeature = e.target.feature;
 
     // Level 1: State Level
     if (layerNo === 1) {
@@ -85,7 +87,8 @@ function LeafletMap(props) {
       featureName = e.target.feature.properties.district;
     }
     // Update card component header
-    setSelectedFeature(featureName);
+    setSelectedFeatureName(featureName);
+    setSelectedFeature(selectedFeature);
   }
 
   //===============================================================
@@ -127,74 +130,6 @@ function LeafletMap(props) {
         cql_filter
       );
 
-      // //   filteredDivisionsGeojson = data;
-      // if (AQData && data) {
-      //   console.log("AQData length:", AQData.data.length);
-      //   data.features.forEach((divisionFeature) => {
-      //     const divisionName =
-      //       divisionFeature.properties.division.toLowerCase();
-      //     console.log("divisionName:", divisionName);
-      //     const aqDataForDivision = AQData.data.find(
-      //       (aqData) => aqData.division_name.toLowerCase() === divisionName
-      //     );
-      //     console.log("aqDataForDivision:", aqDataForDivision);
-      //     if (aqDataForDivision) {
-      //       if (!divisionFeature.properties.hasOwnProperty("param_value")) {
-      //         divisionFeature.properties.param_value = null;
-      //       }
-      //       divisionFeature.properties.param_value =
-      //         aqDataForDivision.param_value;
-      //     }
-      //   });
-      //   console.log("data after merging AQ and Geo Data");
-      //   console.log(data);
-      //   setFilteredDivisionGeojson(data);
-      // } else {
-      //   console.log("Error: AQData or data is undefined");
-      // }
-
-      // function mergeAQAndGeoData(AQData, data, featureName) {
-      //   if (!AQData || !data) {
-      //     console.log("Error: AQData or data is undefined");
-      //     return;
-      //   }
-
-      //   console.log("AQData length:", AQData.data.length);
-
-      //   data.features.forEach((feature) => {
-      //     const featureNameLower =
-      //       feature.properties[featureName].toLowerCase();
-      //     console.log(`${featureName}: ${featureNameLower}`);
-
-      //     const aqDataForFeature = AQData.data.find(
-      //       (aqData) =>
-      //         aqData[`${featureName}_name`].toLowerCase() === featureNameLower
-      //     );
-      //     console.log("aqDataForFeature:", aqDataForFeature);
-
-      //     if (aqDataForFeature) {
-      //       if (!feature.properties.hasOwnProperty("param_value")) {
-      //         feature.properties.param_value = null;
-      //       }
-
-      //       feature.properties.param_value = aqDataForFeature.param_value;
-      //     }
-      //   });
-
-      //   console.log("data after merging AQ and Geo Data");
-      //   console.log(data);
-
-      //   return data;
-      // }
-
-      // // Example usage:
-      // const filteredDivisionGeojson = mergeAQAndGeoData(
-      //   AQData,
-      //   data,
-      //   "division"
-      // );
-      // setFilteredDivisionGeojson(filteredDivisionGeojson);
-
       function mergeAQAndGeoData(AQData, data, featureName) {
         if (!AQData || !data) {
           console.log("Error: AQData or data is undefined");
@@ -224,6 +159,7 @@ function LeafletMap(props) {
             aqDataForFeature.forEach((aqData) => {
               feature.properties.param_values[aqData.param_name] =
                 aqData.param_value;
+              feature.properties.number_of_sensors = aqData.number_of_sensors;
             });
           }
         });
@@ -306,66 +242,6 @@ function LeafletMap(props) {
         cql_filter
       );
 
-      // merge AQ and Geo Data
-      // if (AQData && data) {
-      //   console.log("AQData length:", AQData.data.length);
-      //   data.features.forEach((districtFeature) => {
-      //     const districtName =
-      //       districtFeature.properties.district.toLowerCase();
-      //     console.log("districtName:", districtName);
-      //     const aqDataForDistrict = AQData.data.find(
-      //       (aqData) => aqData.district_name.toLowerCase() === districtName
-      //     );
-      //     console.log("aqDataForDistrict:", aqDataForDistrict);
-      //     if (aqDataForDistrict) {
-      //       if (!districtFeature.properties.hasOwnProperty("param_value")) {
-      //         districtFeature.properties.param_value = null;
-      //       }
-      //       districtFeature.properties.param_value =
-      //         aqDataForDistrict.param_value;
-      //     }
-      //   });
-      //   console.log("data after merging AQ and Geo Data");
-      //   console.log(data);
-      //   setFilteredDistrictsGeojson(data);
-      // } else {
-      //   console.log("Error: AQData or data is undefined");
-      // }
-
-      // function mergeAQAndGeoData(AQData, data, featureName) {
-      //   if (!AQData || !data) {
-      //     console.log("Error: AQData or data is undefined");
-      //     return;
-      //   }
-
-      //   console.log("AQData length:", AQData.data.length);
-
-      //   data.features.forEach((feature) => {
-      //     const featureNameLower =
-      //       feature.properties[featureName].toLowerCase();
-      //     console.log(`${featureName}: ${featureNameLower}`);
-
-      //     const aqDataForFeature = AQData.data.find(
-      //       (aqData) =>
-      //         aqData[`${featureName}_name`].toLowerCase() === featureNameLower
-      //     );
-      //     console.log("aqDataForFeature:", aqDataForFeature);
-
-      //     if (aqDataForFeature) {
-      //       if (!feature.properties.hasOwnProperty("param_value")) {
-      //         feature.properties.param_value = null;
-      //       }
-
-      //       feature.properties.param_value = aqDataForFeature.param_value;
-      //     }
-      //   });
-
-      //   console.log("data after merging AQ and Geo Data");
-      //   console.log(data);
-
-      //   return data;
-      // }
-
       function mergeAQAndGeoData(AQData, data, featureName) {
         if (!AQData || !data) {
           console.log("Error: AQData or data is undefined");
@@ -395,6 +271,7 @@ function LeafletMap(props) {
             aqDataForFeature.forEach((aqData) => {
               feature.properties.param_values[aqData.param_name] =
                 aqData.param_value;
+              feature.properties.number_of_sensors = aqData.number_of_sensors;
             });
           }
         });

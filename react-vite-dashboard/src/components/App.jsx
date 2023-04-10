@@ -18,7 +18,9 @@ import GeoDataLoading from "./GeoDataLoading";
 export default function App() {
   // define global variables and state variables
   const [currentDate, setCurrentDate] = useState(Date.now());
-  const [selectedFeature, setSelectedFeature] = useState("Select feature");
+  const [selectedFeature, setSelectedFeature] = useState(null);
+  const [selectedFeatureName, setSelectedFeatureName] =
+    useState("Select feature");
   const [pollutant, setPollutant] = useState("PM2.5");
   const [layerNo, setLayerNo] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,42 +52,6 @@ export default function App() {
       const { data, statesLoading, statesError } = await getGeoDataV2(
         stateDataLayerName
       );
-      // console.log("data in app");
-      // console.log(data);
-
-      // then merge AQ and Geo Data
-      // if both AQ and Geo Data are fetched, then set the state
-      // if (AQData && data) {
-      //   console.log("AQData length:", AQData.data.length);
-      //   data.features.forEach((stateFeature) => {
-      //     const stateName = stateFeature.properties.state.toLowerCase();
-      //     console.log("stateName:", stateName);
-      //     const aqDataForState = AQData.data.find(
-      //       (aqData) => aqData.state_name.toLowerCase() === stateName
-      //     );
-      //     console.log("aqDataForState:", aqDataForState);
-      //     if (aqDataForState) {
-      //       if (!stateFeature.properties.hasOwnProperty("param_value")) {
-      //         stateFeature.properties.param_value = null;
-      //       }
-      //       stateFeature.properties.param_value = aqDataForState.param_value;
-      //     }
-      //   });
-      //   console.log("data after merging AQ and Geo Data");
-      //   console.log(data);
-      //   setStatesData(data);
-      //   setIsLoading(false); // set isLoading to false here
-      // } else {
-      //   console.log("Error: AQData or data is undefined");
-      // }
-
-      // while (statesLoading) {
-      //   console.log("Loading States Data...");
-      // }
-      // if (statesError) {
-      //   console.log("Error in loading States Data!");
-      // }
-      // setStatesData(data);
 
       // function mergeAQAndGeoData(AQData, data, featureName) {
       //   if (!AQData || !data) {
@@ -100,18 +66,23 @@ export default function App() {
       //       feature.properties[featureName].toLowerCase();
       //     console.log(`${featureName}: ${featureNameLower}`);
 
-      //     const aqDataForFeature = AQData.data.find(
+      //     // Get all the AQ data points for the matching feature
+      //     const aqDataForFeature = AQData.data.filter(
       //       (aqData) =>
       //         aqData[`${featureName}_name`].toLowerCase() === featureNameLower
       //     );
       //     console.log("aqDataForFeature:", aqDataForFeature);
 
-      //     if (aqDataForFeature) {
-      //       if (!feature.properties.hasOwnProperty("param_value")) {
-      //         feature.properties.param_value = null;
+      //     if (aqDataForFeature.length > 0) {
+      //       if (!feature.properties.hasOwnProperty("param_values")) {
+      //         feature.properties.param_values = {};
       //       }
 
-      //       feature.properties.param_value = aqDataForFeature.param_value;
+      //       // Set the AQ data values for each parameter
+      //       aqDataForFeature.forEach((aqData) => {
+      //         feature.properties.param_values[aqData.param_name] =
+      //           aqData.param_value;
+      //       });
       //     }
       //   });
 
@@ -150,6 +121,7 @@ export default function App() {
             aqDataForFeature.forEach((aqData) => {
               feature.properties.param_values[aqData.param_name] =
                 aqData.param_value;
+              feature.properties.number_of_sensors = aqData.number_of_sensors;
             });
           }
         });
@@ -183,6 +155,8 @@ export default function App() {
         setCurrentDate,
         selectedFeature,
         setSelectedFeature,
+        selectedFeatureName,
+        setSelectedFeatureName,
         pollutant,
         setPollutant,
         layerNo,
@@ -192,11 +166,7 @@ export default function App() {
       <div className="App">
         <Controls />
         <Card />
-        <LeafletMap
-          statesData={statesData}
-          //   allDivisionData={allDivisionData}
-          //   allDistrictData={allDistrictData}
-        />
+        <LeafletMap statesData={statesData} />
         {isLoading && <Loader />}
       </div>
     </DataContext.Provider>
