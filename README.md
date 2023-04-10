@@ -4,7 +4,9 @@ AMRIT-DASHBOARD-FRONTEND
 </p>
 This repository contains the frontend code for the Amrit Dashboard Project, which is built using React.
 
+
 Getting started
+
 Before you begin, make sure you have installed the latest version of Node.js and Yarn on your machine.
 
 - Clone this repository to your local machine using `git clone https://github.com/dsonigladiator/amrit-dashboard-frontend.git`
