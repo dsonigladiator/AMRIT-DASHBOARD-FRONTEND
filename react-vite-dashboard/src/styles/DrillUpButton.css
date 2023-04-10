@@ -1,6 +1,6 @@
 .drillup-btn {
   position: absolute;
-  top: 20%;
+  top: 15%; /* Updated top value */
   left: 5%;
   transform: translateY(-50%);
   z-index: 999;

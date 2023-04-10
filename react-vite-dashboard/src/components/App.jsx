@@ -4,6 +4,8 @@ import LeafletMap from "./Map";
 import "../styles/styles.css";
 import Controls from "./Controls";
 import Card from "./Card";
+import Loader from "./Loader";
+
 // import useSWR from "swr";
 import React, { useState, useEffect } from "react";
 import DataContext from "../contexts/Data.Context";
@@ -19,6 +21,7 @@ export default function App() {
   const [selectedFeature, setSelectedFeature] = useState("Select feature");
   const [pollutant, setPollutant] = useState("PM2.5");
   const [layerNo, setLayerNo] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [statesData, setStatesData] = useState([]);
 
@@ -31,10 +34,13 @@ export default function App() {
     // build queryParams object
     const queryParams = {
       admin_level: "state",
-      params: "pm2.5cnc",
+      params: "pm2.5cnc,pm10cnc,temp,humidity,so2ppb,no2ppb,o3ppb,co",
     };
 
     const getData = async () => {
+      // set loading state
+      setIsLoading(true);
+
       // first fetch AQ Data
       const AQData = await fetchAQData(queryParams);
       console.log("AQ Data: ");
@@ -49,38 +55,124 @@ export default function App() {
 
       // then merge AQ and Geo Data
       // if both AQ and Geo Data are fetched, then set the state
-      if (AQData && data) {
+      // if (AQData && data) {
+      //   console.log("AQData length:", AQData.data.length);
+      //   data.features.forEach((stateFeature) => {
+      //     const stateName = stateFeature.properties.state.toLowerCase();
+      //     console.log("stateName:", stateName);
+      //     const aqDataForState = AQData.data.find(
+      //       (aqData) => aqData.state_name.toLowerCase() === stateName
+      //     );
+      //     console.log("aqDataForState:", aqDataForState);
+      //     if (aqDataForState) {
+      //       if (!stateFeature.properties.hasOwnProperty("param_value")) {
+      //         stateFeature.properties.param_value = null;
+      //       }
+      //       stateFeature.properties.param_value = aqDataForState.param_value;
+      //     }
+      //   });
+      //   console.log("data after merging AQ and Geo Data");
+      //   console.log(data);
+      //   setStatesData(data);
+      //   setIsLoading(false); // set isLoading to false here
+      // } else {
+      //   console.log("Error: AQData or data is undefined");
+      // }
+
+      // while (statesLoading) {
+      //   console.log("Loading States Data...");
+      // }
+      // if (statesError) {
+      //   console.log("Error in loading States Data!");
+      // }
+      // setStatesData(data);
+
+      // function mergeAQAndGeoData(AQData, data, featureName) {
+      //   if (!AQData || !data) {
+      //     console.log("Error: AQData or data is undefined");
+      //     return;
+      //   }
+
+      //   console.log("AQData length:", AQData.data.length);
+
+      //   data.features.forEach((feature) => {
+      //     const featureNameLower =
+      //       feature.properties[featureName].toLowerCase();
+      //     console.log(`${featureName}: ${featureNameLower}`);
+
+      //     const aqDataForFeature = AQData.data.find(
+      //       (aqData) =>
+      //         aqData[`${featureName}_name`].toLowerCase() === featureNameLower
+      //     );
+      //     console.log("aqDataForFeature:", aqDataForFeature);
+
+      //     if (aqDataForFeature) {
+      //       if (!feature.properties.hasOwnProperty("param_value")) {
+      //         feature.properties.param_value = null;
+      //       }
+
+      //       feature.properties.param_value = aqDataForFeature.param_value;
+      //     }
+      //   });
+
+      //   console.log("data after merging AQ and Geo Data");
+      //   console.log(data);
+
+      //   return data;
+      // }
+
+      function mergeAQAndGeoData(AQData, data, featureName) {
+        if (!AQData || !data) {
+          console.log("Error: AQData or data is undefined");
+          return;
+        }
+
         console.log("AQData length:", AQData.data.length);
-        data.features.forEach((stateFeature) => {
-          const stateName = stateFeature.properties.state.toLowerCase();
-          console.log("stateName:", stateName);
-          const aqDataForState = AQData.data.find(
-            (aqData) => aqData.state_name.toLowerCase() === stateName
+
+        data.features.forEach((feature) => {
+          const featureNameLower =
+            feature.properties[featureName].toLowerCase();
+          console.log(`${featureName}: ${featureNameLower}`);
+
+          // Get all the AQ data points for the matching feature
+          const aqDataForFeature = AQData.data.filter(
+            (aqData) =>
+              aqData[`${featureName}_name`].toLowerCase() === featureNameLower
           );
-          console.log("aqDataForState:", aqDataForState);
-          if (aqDataForState) {
-            if (!stateFeature.properties.hasOwnProperty("param_value")) {
-              stateFeature.properties.param_value = null;
+          console.log("aqDataForFeature:", aqDataForFeature);
+
+          if (aqDataForFeature.length > 0) {
+            if (!feature.properties.hasOwnProperty("param_values")) {
+              feature.properties.param_values = {};
             }
-            stateFeature.properties.param_value = aqDataForState.param_value;
+
+            // Set the AQ data values for each parameter
+            aqDataForFeature.forEach((aqData) => {
+              feature.properties.param_values[aqData.param_name] =
+                aqData.param_value;
+            });
           }
         });
+
         console.log("data after merging AQ and Geo Data");
         console.log(data);
-        setStatesData(data);
-      } else {
-        console.log("Error: AQData or data is undefined");
+
+        return data;
       }
+
+      // Example usage:
+      const filteredStatesGeojson = mergeAQAndGeoData(AQData, data, "state");
+      setStatesData(filteredStatesGeojson);
+      setIsLoading(false);
 
       while (statesLoading) {
         console.log("Loading States Data...");
       }
+
       if (statesError) {
         console.log("Error in loading States Data!");
       }
-      // setStatesData(data);
     };
-
     getData();
   }, []);
 
@@ -105,6 +197,7 @@ export default function App() {
           //   allDivisionData={allDivisionData}
           //   allDistrictData={allDistrictData}
         />
+        {isLoading && <Loader />}
       </div>
     </DataContext.Provider>
   );

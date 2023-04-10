@@ -10,9 +10,9 @@ import getColor from "../utils/getColor";
 import fetchAQData from "../utils/fetchAQData.js";
 import ZoomtoBounds from "./ZoomToBounds";
 import {
-  indiaGeoJSONStyle,
-  divisionGeoJSONStyle,
-  districtGeoJSONStyle,
+  // indiaGeoJSONStyle,
+  // divisionGeoJSONStyle,
+  // districtGeoJSONStyle,
   indiaGeoJSONStyleV1,
   divisionGeoJSONStyleV1,
   districtGeoJSONStyleV1,
@@ -111,7 +111,7 @@ function LeafletMap(props) {
     // build queryParams object
     const queryParams = {
       admin_level: "division",
-      params: "pm2.5cnc",
+      params: "pm2.5cnc,pm10cnc,temp,humidity,so2ppb,no2ppb,o3ppb,co",
     };
 
     // fetch division data and do something with it
@@ -127,31 +127,120 @@ function LeafletMap(props) {
         cql_filter
       );
 
-      //   filteredDivisionsGeojson = data;
-      if (AQData && data) {
+      // //   filteredDivisionsGeojson = data;
+      // if (AQData && data) {
+      //   console.log("AQData length:", AQData.data.length);
+      //   data.features.forEach((divisionFeature) => {
+      //     const divisionName =
+      //       divisionFeature.properties.division.toLowerCase();
+      //     console.log("divisionName:", divisionName);
+      //     const aqDataForDivision = AQData.data.find(
+      //       (aqData) => aqData.division_name.toLowerCase() === divisionName
+      //     );
+      //     console.log("aqDataForDivision:", aqDataForDivision);
+      //     if (aqDataForDivision) {
+      //       if (!divisionFeature.properties.hasOwnProperty("param_value")) {
+      //         divisionFeature.properties.param_value = null;
+      //       }
+      //       divisionFeature.properties.param_value =
+      //         aqDataForDivision.param_value;
+      //     }
+      //   });
+      //   console.log("data after merging AQ and Geo Data");
+      //   console.log(data);
+      //   setFilteredDivisionGeojson(data);
+      // } else {
+      //   console.log("Error: AQData or data is undefined");
+      // }
+
+      // function mergeAQAndGeoData(AQData, data, featureName) {
+      //   if (!AQData || !data) {
+      //     console.log("Error: AQData or data is undefined");
+      //     return;
+      //   }
+
+      //   console.log("AQData length:", AQData.data.length);
+
+      //   data.features.forEach((feature) => {
+      //     const featureNameLower =
+      //       feature.properties[featureName].toLowerCase();
+      //     console.log(`${featureName}: ${featureNameLower}`);
+
+      //     const aqDataForFeature = AQData.data.find(
+      //       (aqData) =>
+      //         aqData[`${featureName}_name`].toLowerCase() === featureNameLower
+      //     );
+      //     console.log("aqDataForFeature:", aqDataForFeature);
+
+      //     if (aqDataForFeature) {
+      //       if (!feature.properties.hasOwnProperty("param_value")) {
+      //         feature.properties.param_value = null;
+      //       }
+
+      //       feature.properties.param_value = aqDataForFeature.param_value;
+      //     }
+      //   });
+
+      //   console.log("data after merging AQ and Geo Data");
+      //   console.log(data);
+
+      //   return data;
+      // }
+
+      // // Example usage:
+      // const filteredDivisionGeojson = mergeAQAndGeoData(
+      //   AQData,
+      //   data,
+      //   "division"
+      // );
+      // setFilteredDivisionGeojson(filteredDivisionGeojson);
+
+      function mergeAQAndGeoData(AQData, data, featureName) {
+        if (!AQData || !data) {
+          console.log("Error: AQData or data is undefined");
+          return;
+        }
+
         console.log("AQData length:", AQData.data.length);
-        data.features.forEach((divisionFeature) => {
-          const divisionName =
-            divisionFeature.properties.division.toLowerCase();
-          console.log("divisionName:", divisionName);
-          const aqDataForDivision = AQData.data.find(
-            (aqData) => aqData.division_name.toLowerCase() === divisionName
+
+        data.features.forEach((feature) => {
+          const featureNameLower =
+            feature.properties[featureName].toLowerCase();
+          console.log(`${featureName}: ${featureNameLower}`);
+
+          // Get all the AQ data points for the matching feature
+          const aqDataForFeature = AQData.data.filter(
+            (aqData) =>
+              aqData[`${featureName}_name`].toLowerCase() === featureNameLower
           );
-          console.log("aqDataForDivision:", aqDataForDivision);
-          if (aqDataForDivision) {
-            if (!divisionFeature.properties.hasOwnProperty("param_value")) {
-              divisionFeature.properties.param_value = null;
+          console.log("aqDataForFeature:", aqDataForFeature);
+
+          if (aqDataForFeature.length > 0) {
+            if (!feature.properties.hasOwnProperty("param_values")) {
+              feature.properties.param_values = {};
             }
-            divisionFeature.properties.param_value =
-              aqDataForDivision.param_value;
+
+            // Set the AQ data values for each parameter
+            aqDataForFeature.forEach((aqData) => {
+              feature.properties.param_values[aqData.param_name] =
+                aqData.param_value;
+            });
           }
         });
+
         console.log("data after merging AQ and Geo Data");
         console.log(data);
-        setFilteredDivisionGeojson(data);
-      } else {
-        console.log("Error: AQData or data is undefined");
+
+        return data;
       }
+
+      // Example usage:
+      const filteredDivisionGeojson = mergeAQAndGeoData(
+        AQData,
+        data,
+        "division"
+      );
+      setFilteredDivisionGeojson(filteredDivisionGeojson);
 
       // handle data loading and error state
       if (isLoading) {
@@ -169,6 +258,7 @@ function LeafletMap(props) {
           setHasDrilledDown(true);
         } else {
           alert("No divisions found for the selected State");
+          //   setHasDrilledDown(false);
         }
       }
 
@@ -200,7 +290,7 @@ function LeafletMap(props) {
     // build queryParams object
     const queryParams = {
       admin_level: "district",
-      params: "pm2.5cnc",
+      params: "pm2.5cnc,pm10cnc,temp,humidity,so2ppb,no2ppb,o3ppb,co",
     };
 
     // fetch division data and do something with it
@@ -216,31 +306,112 @@ function LeafletMap(props) {
         cql_filter
       );
 
-      //   filteredDivisionsGeojson = data;
-      if (AQData && data) {
+      // merge AQ and Geo Data
+      // if (AQData && data) {
+      //   console.log("AQData length:", AQData.data.length);
+      //   data.features.forEach((districtFeature) => {
+      //     const districtName =
+      //       districtFeature.properties.district.toLowerCase();
+      //     console.log("districtName:", districtName);
+      //     const aqDataForDistrict = AQData.data.find(
+      //       (aqData) => aqData.district_name.toLowerCase() === districtName
+      //     );
+      //     console.log("aqDataForDistrict:", aqDataForDistrict);
+      //     if (aqDataForDistrict) {
+      //       if (!districtFeature.properties.hasOwnProperty("param_value")) {
+      //         districtFeature.properties.param_value = null;
+      //       }
+      //       districtFeature.properties.param_value =
+      //         aqDataForDistrict.param_value;
+      //     }
+      //   });
+      //   console.log("data after merging AQ and Geo Data");
+      //   console.log(data);
+      //   setFilteredDistrictsGeojson(data);
+      // } else {
+      //   console.log("Error: AQData or data is undefined");
+      // }
+
+      // function mergeAQAndGeoData(AQData, data, featureName) {
+      //   if (!AQData || !data) {
+      //     console.log("Error: AQData or data is undefined");
+      //     return;
+      //   }
+
+      //   console.log("AQData length:", AQData.data.length);
+
+      //   data.features.forEach((feature) => {
+      //     const featureNameLower =
+      //       feature.properties[featureName].toLowerCase();
+      //     console.log(`${featureName}: ${featureNameLower}`);
+
+      //     const aqDataForFeature = AQData.data.find(
+      //       (aqData) =>
+      //         aqData[`${featureName}_name`].toLowerCase() === featureNameLower
+      //     );
+      //     console.log("aqDataForFeature:", aqDataForFeature);
+
+      //     if (aqDataForFeature) {
+      //       if (!feature.properties.hasOwnProperty("param_value")) {
+      //         feature.properties.param_value = null;
+      //       }
+
+      //       feature.properties.param_value = aqDataForFeature.param_value;
+      //     }
+      //   });
+
+      //   console.log("data after merging AQ and Geo Data");
+      //   console.log(data);
+
+      //   return data;
+      // }
+
+      function mergeAQAndGeoData(AQData, data, featureName) {
+        if (!AQData || !data) {
+          console.log("Error: AQData or data is undefined");
+          return;
+        }
+
         console.log("AQData length:", AQData.data.length);
-        data.features.forEach((districtFeature) => {
-          const districtName =
-            districtFeature.properties.district.toLowerCase();
-          console.log("districtName:", districtName);
-          const aqDataForDistrict = AQData.data.find(
-            (aqData) => aqData.district_name.toLowerCase() === districtName
+
+        data.features.forEach((feature) => {
+          const featureNameLower =
+            feature.properties[featureName].toLowerCase();
+          console.log(`${featureName}: ${featureNameLower}`);
+
+          // Get all the AQ data points for the matching feature
+          const aqDataForFeature = AQData.data.filter(
+            (aqData) =>
+              aqData[`${featureName}_name`].toLowerCase() === featureNameLower
           );
-          console.log("aqDataForDistrict:", aqDataForDistrict);
-          if (aqDataForDistrict) {
-            if (!districtFeature.properties.hasOwnProperty("param_value")) {
-              districtFeature.properties.param_value = null;
+          console.log("aqDataForFeature:", aqDataForFeature);
+
+          if (aqDataForFeature.length > 0) {
+            if (!feature.properties.hasOwnProperty("param_values")) {
+              feature.properties.param_values = {};
             }
-            districtFeature.properties.param_value =
-              aqDataForDistrict.param_value;
+
+            // Set the AQ data values for each parameter
+            aqDataForFeature.forEach((aqData) => {
+              feature.properties.param_values[aqData.param_name] =
+                aqData.param_value;
+            });
           }
         });
+
         console.log("data after merging AQ and Geo Data");
         console.log(data);
-        setFilteredDistrictsGeojson(data);
-      } else {
-        console.log("Error: AQData or data is undefined");
+
+        return data;
       }
+
+      // Example usage:
+      const filteredDistrictsGeojson = mergeAQAndGeoData(
+        AQData,
+        data,
+        "district"
+      );
+      setFilteredDistrictsGeojson(filteredDistrictsGeojson);
 
       // handle data loading and error state
       if (isLoading) {
@@ -258,6 +429,7 @@ function LeafletMap(props) {
           setHasDrilledDown(true);
         } else {
           alert("No districts found for the selected Division");
+          //   setHasDrilledDown(false);
         }
       }
 

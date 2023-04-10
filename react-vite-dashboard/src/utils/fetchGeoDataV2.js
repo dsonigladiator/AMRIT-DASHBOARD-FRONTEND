@@ -8,7 +8,7 @@ export default async function getGeoDataV2(typename, cql = null) {
 
     try {
         isLoading = true;
-        const res = await fetch(url);
+        const res = await fetch(url, { mode: "cors" });
         if (!res.ok) {
             const error = "GeoJSon response not ok";
             console.log(error);
