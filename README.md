@@ -7,7 +7,13 @@ This repository contains the frontend code for the Amrit Dashboard Project, whic
 Getting started
 Before you begin, make sure you have installed the latest version of Node.js and Yarn on your machine.
 
-Clone this repository to your local machine using git clone https://github.com/<YOUR-USERNAME>/amrit-dashboard-frontend.git.
-Navigate to the project directory using cd amrit-dashboard-frontend.
-Install the required dependencies using yarn install or npm install
-Start the development server using yarn dev or npm run dev
+- Clone this repository to your local machine using git clone https://github.com/<YOUR-USERNAME>/amrit-dashboard-frontend.git.
+- Navigate to the project directory using cd amrit-dashboard-frontend.
+- Install the required dependencies using 
+  yarn install 
+      or 
+  npm install
+- Start the development server using 
+  yarn dev 
+    or 
+  npm run dev
