@@ -53,45 +53,6 @@ export default function App() {
         stateDataLayerName
       );
 
-      // function mergeAQAndGeoData(AQData, data, featureName) {
-      //   if (!AQData || !data) {
-      //     console.log("Error: AQData or data is undefined");
-      //     return;
-      //   }
-
-      //   console.log("AQData length:", AQData.data.length);
-
-      //   data.features.forEach((feature) => {
-      //     const featureNameLower =
-      //       feature.properties[featureName].toLowerCase();
-      //     console.log(`${featureName}: ${featureNameLower}`);
-
-      //     // Get all the AQ data points for the matching feature
-      //     const aqDataForFeature = AQData.data.filter(
-      //       (aqData) =>
-      //         aqData[`${featureName}_name`].toLowerCase() === featureNameLower
-      //     );
-      //     console.log("aqDataForFeature:", aqDataForFeature);
-
-      //     if (aqDataForFeature.length > 0) {
-      //       if (!feature.properties.hasOwnProperty("param_values")) {
-      //         feature.properties.param_values = {};
-      //       }
-
-      //       // Set the AQ data values for each parameter
-      //       aqDataForFeature.forEach((aqData) => {
-      //         feature.properties.param_values[aqData.param_name] =
-      //           aqData.param_value;
-      //       });
-      //     }
-      //   });
-
-      //   console.log("data after merging AQ and Geo Data");
-      //   console.log(data);
-
-      //   return data;
-      // }
-
       function mergeAQAndGeoData(AQData, data, featureName) {
         if (!AQData || !data) {
           console.log("Error: AQData or data is undefined");
@@ -103,14 +64,14 @@ export default function App() {
         data.features.forEach((feature) => {
           const featureNameLower =
             feature.properties[featureName].toLowerCase();
-          console.log(`${featureName}: ${featureNameLower}`);
+          // console.log(`${featureName}: ${featureNameLower}`);
 
           // Get all the AQ data points for the matching feature
           const aqDataForFeature = AQData.data.filter(
             (aqData) =>
               aqData[`${featureName}_name`].toLowerCase() === featureNameLower
           );
-          console.log("aqDataForFeature:", aqDataForFeature);
+          // console.log("aqDataForFeature:", aqDataForFeature);
 
           if (aqDataForFeature.length > 0) {
             if (!feature.properties.hasOwnProperty("param_values")) {
@@ -164,10 +125,10 @@ export default function App() {
       }}
     >
       <div className="App">
+        {isLoading && <Loader />}
         <Controls />
         <Card />
         <LeafletMap statesData={statesData} />
-        {isLoading && <Loader />}
       </div>
     </DataContext.Provider>
   );

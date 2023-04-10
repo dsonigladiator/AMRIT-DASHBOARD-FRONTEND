@@ -18,6 +18,8 @@ import {
   districtGeoJSONStyleV1,
 } from "../utils/geojsonStyles.js";
 import getGeoDataV2 from "../utils/fetchGeoDataV2.js";
+import { set } from "date-fns";
+import e from "cors";
 
 // import icon from 'leaflet/dist/images/marker-icon.png';
 // import iconShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -119,10 +121,13 @@ function LeafletMap(props) {
 
     // fetch division data and do something with it
     const getData = async () => {
+      // set loading state
+      setIsLoading(true);
+
       // first fetch AQ Data
       const AQData = await fetchAQData(queryParams);
-      console.log("AQ Data: ");
-      console.log(AQData);
+      // console.log("AQ Data: ");
+      // console.log(AQData);
 
       // then fetch Geo Data
       const { data, isLoading, isError } = await getGeoDataV2(
@@ -141,14 +146,14 @@ function LeafletMap(props) {
         data.features.forEach((feature) => {
           const featureNameLower =
             feature.properties[featureName].toLowerCase();
-          console.log(`${featureName}: ${featureNameLower}`);
+          // console.log(`${featureName}: ${featureNameLower}`);
 
           // Get all the AQ data points for the matching feature
           const aqDataForFeature = AQData.data.filter(
             (aqData) =>
               aqData[`${featureName}_name`].toLowerCase() === featureNameLower
           );
-          console.log("aqDataForFeature:", aqDataForFeature);
+          // console.log("aqDataForFeature:", aqDataForFeature);
 
           if (aqDataForFeature.length > 0) {
             if (!feature.properties.hasOwnProperty("param_values")) {
@@ -177,6 +182,7 @@ function LeafletMap(props) {
         "division"
       );
       setFilteredDivisionGeojson(filteredDivisionGeojson);
+      setIsLoading(false);
 
       // handle data loading and error state
       if (isLoading) {
@@ -194,7 +200,10 @@ function LeafletMap(props) {
           setHasDrilledDown(true);
         } else {
           alert("No divisions found for the selected State");
-          //   setHasDrilledDown(false);
+          setSelectedFeature(null);
+          setSelectedFeatureName(null);
+          setHasDrilledDown(false);
+          return;
         }
       }
 
@@ -231,10 +240,13 @@ function LeafletMap(props) {
 
     // fetch division data and do something with it
     const getData = async () => {
+      // set loading state
+      setIsLoading(true);
+
       // first fetch AQ Data
       const AQData = await fetchAQData(queryParams);
-      console.log("AQ Data: ");
-      console.log(AQData);
+      // console.log("AQ Data: ");
+      // console.log(AQData);
 
       // then fetch Geo Data
       const { data, isLoading, isError } = await getGeoDataV2(
@@ -253,14 +265,14 @@ function LeafletMap(props) {
         data.features.forEach((feature) => {
           const featureNameLower =
             feature.properties[featureName].toLowerCase();
-          console.log(`${featureName}: ${featureNameLower}`);
+          // console.log(`${featureName}: ${featureNameLower}`);
 
           // Get all the AQ data points for the matching feature
           const aqDataForFeature = AQData.data.filter(
             (aqData) =>
               aqData[`${featureName}_name`].toLowerCase() === featureNameLower
           );
-          console.log("aqDataForFeature:", aqDataForFeature);
+          // console.log("aqDataForFeature:", aqDataForFeature);
 
           if (aqDataForFeature.length > 0) {
             if (!feature.properties.hasOwnProperty("param_values")) {
@@ -289,6 +301,7 @@ function LeafletMap(props) {
         "district"
       );
       setFilteredDistrictsGeojson(filteredDistrictsGeojson);
+      setIsLoading(false);
 
       // handle data loading and error state
       if (isLoading) {
@@ -306,7 +319,10 @@ function LeafletMap(props) {
           setHasDrilledDown(true);
         } else {
           alert("No districts found for the selected Division");
-          //   setHasDrilledDown(false);
+          setSelectedFeature(null);
+          setSelectedFeatureName(null);
+          setHasDrilledDown(false);
+          return;
         }
       }
 

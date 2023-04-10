@@ -22,7 +22,9 @@ const Card = () => {
 
   return (
     <div className="card-container" style={{ backgroundColor: "#ffe6cc" }}>
-      <h1>{selectedFeatureName}</h1>
+      <h3>
+        <b>{selectedFeatureName ?? "-"}</b>
+      </h3>
       <div className="card-item">
         <label>Number of Sensors</label>
         <span>{getNumberOfSensors()}</span>
