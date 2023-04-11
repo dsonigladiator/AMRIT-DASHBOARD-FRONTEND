@@ -58,6 +58,11 @@ const Card = () => {
             <div>{getPollutantValue("so2ppb")}</div>
             <HealthBar value={getPollutantValue("so2ppb") ?? 0} />
           </div>
+          <div className="data-item">
+            <div>Temp</div>
+            <div>{getPollutantValue("temp")}</div>
+            <HealthBar value={getPollutantValue("temp") ?? 0} />
+          </div>
         </div>
         <div className="data-row">
           <div className="data-item">
@@ -74,6 +79,11 @@ const Card = () => {
             <div>CO</div>
             <div>{getPollutantValue("co")}</div>
             <HealthBar value={getPollutantValue("co") ?? 0} />
+          </div>
+          <div className="data-item">
+            <div>Humidity</div>
+            <div>{getPollutantValue("humidity")}</div>
+            <HealthBar value={getPollutantValue("humidity") ?? 0} />
           </div>
         </div>
       </div>
