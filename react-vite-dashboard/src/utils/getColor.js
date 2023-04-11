@@ -1,127 +1,3 @@
-// import { useContext } from "react";
-// import DataContext from "../contexts/Data.Context.js";
-
-// export default function getColor(value) {
-//     const { selectedPollutant } = useContext(DataContext);
-
-//     // define color scale based on selectedPollutant value
-//     let colorScale;
-//     switch (selectedPollutant) {
-//         case "pm2.5cnc":
-//             colorScale = [
-//                 "#f1eef6",
-//                 "#d0d1e6",
-//                 "#a6bddb",
-//                 "#67a9cf",
-//                 "#1c9099",
-//                 "#016c59",
-//             ];
-//             break;
-//         case "pm10cnc":
-//             colorScale = [
-//                 "#f1eef6",
-//                 "#d4b9da",
-//                 "#c994c7",
-//                 "#df65b0",
-//                 "#e7298a",
-//                 "#ce1256",
-//                 "#91003f",
-//             ];
-//             break;
-//         case "so2ppb":
-//             colorScale = [
-//                 "#feebe2",
-//                 "#fbb4b9",
-//                 "#f768a1",
-//                 "#c51b8a",
-//                 "#7a0177",
-//             ];
-//             break;
-//         case "no2ppb":
-//             colorScale = [
-//                 "#f1eef6",
-//                 "#d0d1e6",
-//                 "#a6bddb",
-//                 "#67a9cf",
-//                 "#1c9099",
-//                 "#016c59",
-//             ];
-//             break;
-//         case "o3ppb":
-//             colorScale = [
-//                 "#e5f5e0",
-//                 "#a1d99b",
-//                 "#31a354",
-//                 "#006d2c",
-//                 "#00441b",
-//             ];
-//             break;
-//         case "co":
-//             colorScale = [
-//                 "#f1eef6",
-//                 "#d0d1e6",
-//                 "#a6bddb",
-//                 "#67a9cf",
-//                 "#1c9099",
-//                 "#016c59",
-//             ];
-//             break;
-//         case "temp":
-//             colorScale = [
-//                 "#b2182b",
-//                 "#d6604d",
-//                 "#f4a582",
-//                 "#fddbc7",
-//                 "#f7f7f7",
-//                 "#d1e5f0",
-//                 "#92c5de",
-//                 "#4393c3",
-//                 "#2166ac",
-//             ];
-//             break;
-//         case "humidity":
-//             colorScale = [
-//                 "#f7fcfd",
-//                 "#e5f5f9",
-//                 "#ccece6",
-//                 "#99d8c9",
-//                 "#66c2a4",
-//                 "#41ae76",
-//                 "#238b45",
-//                 "#006d2c",
-//                 "#00441b",
-//             ];
-//             break;
-//         default:
-//             colorScale = [
-//                 "#f1eef6",
-//                 "#d0d1e6",
-//                 "#a6bddb",
-//                 "#67a9cf",
-//                 "#1c9099",
-//                 "#016c59",
-//             ];
-//     }
-
-//     // define color based on value and selectedPollutant
-//     let color;
-//     if (value <= 20) {
-//         color = colorScale[0];
-//     } else if (value <= 30) {
-//         color = colorScale[1];
-//     } else if (value <= 40) {
-//         color = colorScale[2];
-//     } else if (value <= 50) {
-//         color = colorScale[3];
-//     } else if (value <= 60) {
-//         color = colorScale[4];
-//     } else {
-//         color = colorScale[5];
-//     }
-//     return color;
-// };
-
-
 import { useContext } from "react";
 import DataContext from "../contexts/Data.Context.js";
 
@@ -130,58 +6,108 @@ export default function getColor(value) {
 
     // define color scale based on selectedPollutant value
     const colorScale = [
-        "#f1eef6",
-        "#d0d1e6",
-        "#a6bddb",
-        "#67a9cf",
-        "#1c9099",
-        "#016c59",
+        "#00E400",
+        "#FFFF00",
+        "#FF7E00",
+        "#FF0000",
+        "#8F3F97",
+        "#7E0023",
     ];
 
-    // define value scales based on pollutant
-    let minValue, maxValue;
+    // define value ranges based on pollutant
+    let range;
+    let good, fair, poor, veryPoor, hazardous;
     switch (selectedPollutant) {
         case "pm2.5cnc":
-            minValue = 0;
-            maxValue = 60;
+            range = 300;
+            good = 25;
+            fair = 50;
+            poor = 100;
+            veryPoor = 300;
+            hazardous = Number.POSITIVE_INFINITY;
             break;
         case "pm10cnc":
-            minValue = 0;
-            maxValue = 90;
+            range = 300;
+            good = 40;
+            fair = 80;
+            poor = 120;
+            veryPoor = 300;
+            hazardous = Number.POSITIVE_INFINITY;
             break;
         case "so2ppb":
-            minValue = 0;
-            maxValue = 10;
+            range = 600;
+            good = 60;
+            fair = 200;
+            poor = 300;
+            veryPoor = 600;
+            hazardous = Number.POSITIVE_INFINITY;
             break;
         case "no2ppb":
-            minValue = 0;
-            maxValue = 80;
+            range = 360;
+            good = 100;
+            fair = 120;
+            poor = 180;
+            veryPoor = 360;
+            hazardous = Number.POSITIVE_INFINITY;
             break;
         case "o3ppb":
-            minValue = 0;
-            maxValue = 120;
+            range = 300;
+            good = 50;
+            fair = 100;
+            poor = 150;
+            veryPoor = 300;
+            hazardous = Number.POSITIVE_INFINITY;
             break;
         case "co":
-            minValue = 0;
-            maxValue = 300;
+            range = 300;
+            good = 30;
+            fair = Number.POSITIVE_INFINITY;
+            poor = 70;
+            veryPoor = Number.POSITIVE_INFINITY;
+            hazardous = Number.POSITIVE_INFINITY;
             break;
         case "temp":
-            minValue = -10;
-            maxValue = 40;
+            range = 50;
+            good = -10;
+            fair = 10;
+            poor = 30;
+            veryPoor = 40;
+            hazardous = Number.POSITIVE_INFINITY;
             break;
         case "humidity":
-            minValue = 0;
-            maxValue = 100;
+            range = 100;
+            good = 30;
+            fair = 50;
+            poor = 70;
+            veryPoor = 90;
+            hazardous = Number.POSITIVE_INFINITY;
             break;
         default:
-            minValue = 0;
-            maxValue = 60;
+            range = 300;
+            good = 25;
+            fair = 50;
+            poor = 100;
+            veryPoor = 300;
+            hazardous = Number.POSITIVE_INFINITY;
             break;
     }
 
     // define color based on value and selectedPollutant
-    const range = maxValue - minValue;
-    const step = range / colorScale.length;
-    const index = Math.min(Math.floor((value - minValue) / step), colorScale.length - 1);
-    return colorScale[index];
-};
+    let color;
+    if (value <= good) {
+        color = colorScale[0];
+    } else if (value <= fair) {
+        color = colorScale[1];
+    } else if (value <= poor) {
+        color = colorScale[2];
+    } else if (value <= veryPoor) {
+        color = colorScale[3];
+    } else if (value <= hazardous) {
+        color = colorScale[4];
+    } else {
+        color = colorScale[5];
+    }
+
+    return color;
+}
+

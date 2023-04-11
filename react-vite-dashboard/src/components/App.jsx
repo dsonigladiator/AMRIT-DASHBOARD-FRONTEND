@@ -5,6 +5,7 @@ import "../styles/styles.css";
 import Controls from "./Controls";
 import Card from "./Card";
 import Loader from "./Loader";
+import DrillUpButton from "./DrillUpButton";
 
 // import useSWR from "swr";
 import React, { useState, useEffect } from "react";
@@ -24,8 +25,14 @@ export default function App() {
   const [selectedPollutant, setSelectedPollutant] = useState("pm2.5cnc");
   const [layerNo, setLayerNo] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentLayer, setCurrentLayer] = useState("State");
+  const [bounds, setBounds] = useState([]);
+  const [hasDrilledDown, setHasDrilledDown] = useState(false);
 
   const [statesData, setStatesData] = useState([]);
+  const [filteredDivisionsGeojson, setFilteredDivisionGeojson] = useState(null);
+  const [filteredDistrictsGeojson, setFilteredDistrictsGeojson] =
+    useState(null);
 
   const stateDataLayerName = "geonode:India_States_Simplified_V2";
   const divisionDataLayerName = "geonode:India_Divisions_Merged_V1";
@@ -124,6 +131,18 @@ export default function App() {
         setLayerNo,
         isLoading,
         setIsLoading,
+        currentLayer,
+        setCurrentLayer,
+        bounds,
+        setBounds,
+        statesData,
+        setStatesData,
+        filteredDivisionsGeojson,
+        setFilteredDivisionGeojson,
+        filteredDistrictsGeojson,
+        setFilteredDistrictsGeojson,
+        hasDrilledDown,
+        setHasDrilledDown,
       }}
     >
       <div className="App">
@@ -131,6 +150,7 @@ export default function App() {
         <Controls />
         <Card />
         <LeafletMap statesData={statesData} />
+        <DrillUpButton />
       </div>
     </DataContext.Provider>
   );

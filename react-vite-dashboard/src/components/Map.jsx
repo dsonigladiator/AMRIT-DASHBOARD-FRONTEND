@@ -1,25 +1,27 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, {
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import DataContext from "../contexts/Data.Context.js";
 import { MapContainer, TileLayer } from "react-leaflet";
 import { GeoJSON } from "react-leaflet";
 import "../styles/Map.css";
-import "../styles/DrillUpButton.css";
+// import "../styles/DrillUpButton.css";
+import DrillUpButton from "./DrillUpButton.jsx";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import getColor from "../utils/getColor";
+// import getColor from "../utils/getColor";
 import fetchAQData from "../utils/fetchAQData.js";
 import ZoomtoBounds from "./ZoomToBounds";
 import {
-  // indiaGeoJSONStyle,
-  // divisionGeoJSONStyle,
-  // districtGeoJSONStyle,
   indiaGeoJSONStyleV1,
   divisionGeoJSONStyleV1,
   districtGeoJSONStyleV1,
 } from "../utils/geojsonStyles.js";
 import getGeoDataV2 from "../utils/fetchGeoDataV2.js";
-import { set } from "date-fns";
-import e from "cors";
 
 // import icon from 'leaflet/dist/images/marker-icon.png';
 // import iconShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -45,19 +47,26 @@ function LeafletMap(props) {
   const { layerNo, setLayerNo } = useContext(DataContext);
   const { isLoading, setIsLoading } = useContext(DataContext);
   // set initial currentLayer to "India" (State Level)
-  const [currentLayer, setCurrentLayer] = useState("State");
+  const { currentLayer, setCurrentLayer } = useContext(DataContext);
+  // const [currentLayer, setCurrentLayer] = useState("State");
 
   // set initial bounds of map
-  const [bounds, setBounds] = useState([]);
+  // const [bounds, setBounds] = useState([]);
+  const { bounds, setBounds } = useContext(DataContext);
 
   // some useState variables
   const [drillDownState, setDrillDownState] = useState([]);
-  const [hasDrilledDown, setHasDrilledDown] = useState(false);
+  // const [hasDrilledDown, setHasDrilledDown] = useState(false);
+  const { hasDrilledDown, setHasDrilledDown } = useContext(DataContext);
   // const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [filteredDivisionsGeojson, setFilteredDivisionGeojson] = useState(null);
-  const [filteredDistrictsGeojson, setFilteredDistrictsGeojson] =
-    useState(null);
+  // const [filteredDivisionsGeojson, setFilteredDivisionGeojson] = useState(null);
+  // const [filteredDistrictsGeojson, setFilteredDistrictsGeojson] =
+  //   useState(null);
+  const { filteredDivisionsGeojson, setFilteredDivisionGeojson } =
+    useContext(DataContext);
+  const { filteredDistrictsGeojson, setFilteredDistrictsGeojson } =
+    useContext(DataContext);
 
   // set some bounds for drill up
   var indiaBounds = L.geoJSON(statesData).getBounds();
@@ -372,49 +381,102 @@ function LeafletMap(props) {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // create DrillUpButton component to display on the map during drill up
-  function DrillUpButton() {
-    const { layerNo } = useContext(DataContext);
-    const [isVisible, setIsVisible] = useState(false);
-    // const [layerName, setLayerName] = React.useState("");
-    const [layerName, setLayerName] = useState("");
+  // function DrillUpButton() {
+  //   const { layerNo } = useContext(DataContext);
+  //   const [isVisible, setIsVisible] = useState(false);
+  //   // const [layerName, setLayerName] = React.useState("");
+  //   const [layerName, setLayerName] = useState("");
 
-    React.useEffect(() => {
-      setIsVisible(hasDrilledDown);
-      if (layerNo === 2) {
-        setLayerName("State");
-      } else if (layerNo === 3) {
-        setLayerName("Division");
-      } else if (layerNo === 1) {
-        setIsVisible(false);
-      }
-    }, [hasDrilledDown, layerNo]);
+  //   React.useEffect(() => {
+  //     setIsVisible(hasDrilledDown);
+  //     if (layerNo === 2) {
+  //       setLayerName("State");
+  //     } else if (layerNo === 3) {
+  //       setLayerName("Division");
+  //     } else if (layerNo === 1) {
+  //       setIsVisible(false);
+  //     }
+  //   }, [hasDrilledDown, layerNo]);
 
-    function drillUp() {
-      if (layerNo === 3) {
-        setCurrentLayer("Division");
-        setBounds(filteredDivisionBounds);
-        setFilteredDistrictsGeojson(null);
-        setLayerNo(layerNo - 1);
-      } else if (layerNo === 2) {
-        setCurrentLayer("State");
-        setBounds(indiaBounds);
-        setFilteredDivisionGeojson(null);
-        setLayerNo(layerNo - 1);
-        setSelectedFeature("Click Feature");
-      } else if (layerNo === 1) {
-        alert("No drill up possible at this level.");
-      }
-    }
+  //   function drillUp() {
+  //     if (layerNo === 3) {
+  //       setCurrentLayer("Division");
+  //       setBounds(filteredDivisionBounds);
+  //       setFilteredDistrictsGeojson(null);
+  //       setLayerNo(layerNo - 1);
+  //     } else if (layerNo === 2) {
+  //       setCurrentLayer("State");
+  //       setBounds(indiaBounds);
+  //       setFilteredDivisionGeojson(null);
+  //       setLayerNo(layerNo - 1);
+  //       setSelectedFeature("Click Feature");
+  //     } else if (layerNo === 1) {
+  //       alert("No drill up possible at this level.");
+  //     }
+  //   }
 
-    return (
-      <button
-        className={`drillup-btn ${isVisible ? "visible" : "hidden"}`}
-        onClick={drillUp}
-      >
-        Drill Up to {layerName} Level
-      </button>
-    );
-  }
+  //   return (
+  //     <button
+  //       className={`drillup-btn ${isVisible ? "visible" : "hidden"}`}
+  //       onClick={drillUp}
+  //     >
+  //       Drill Up to {layerName} Level
+  //     </button>
+  //   );
+  // }
+
+  // function DrillUpButton() {
+  //   const { layerNo } = useContext(DataContext);
+  //   const [isVisible, setIsVisible] = useState(false);
+
+  //   const layerName = useMemo(() => {
+  //     if (layerNo === 2) {
+  //       return "State";
+  //     } else if (layerNo === 3) {
+  //       return "Division";
+  //     } else {
+  //       return "";
+  //     }
+  //   }, [layerNo]);
+
+  //   const drillUp = useCallback(() => {
+  //     if (layerNo === 3) {
+  //       setCurrentLayer("Division");
+  //       setBounds(filteredDivisionBounds);
+  //       setFilteredDistrictsGeojson(null);
+  //       setLayerNo(layerNo - 1);
+  //     } else if (layerNo === 2) {
+  //       setCurrentLayer("State");
+  //       setBounds(indiaBounds);
+  //       setFilteredDivisionGeojson(null);
+  //       setLayerNo(layerNo - 1);
+  //       setSelectedFeature("Click Feature");
+  //     } else if (layerNo === 1) {
+  //       alert("No drill up possible at this level.");
+  //     }
+  //   }, [
+  //     layerNo,
+  //     setCurrentLayer,
+  //     setBounds,
+  //     setFilteredDistrictsGeojson,
+  //     setFilteredDivisionGeojson,
+  //     setLayerNo,
+  //     setSelectedFeature,
+  //   ]);
+
+  //   useEffect(() => {
+  //     setIsVisible(hasDrilledDown);
+  //   }, [hasDrilledDown]);
+
+  //   return (
+  //     <button
+  //       className={`drillup-btn ${isVisible ? "visible" : "hidden"}`}
+  //       onClick={drillUp}
+  //     >
+  //       Drill Up to {layerName} Level
+  //     </button>
+  //   );
+  // }
 
   //===============================================================
   //===============================================================
@@ -488,7 +550,7 @@ function LeafletMap(props) {
       {currentLayer === "State" && <IndiaLayer />}
       {currentLayer === "Division" && <FilteredDivisionLayer />}
       {currentLayer === "District" && <FilteredDistrictLayer />}
-      {hasDrilledDown && <DrillUpButton />}
+      {/* {hasDrilledDown && <DrillUpButton />} */}
       {bounds.length !== 0 && <ZoomtoBounds bounds={bounds} />}
     </MapContainer>
   );
