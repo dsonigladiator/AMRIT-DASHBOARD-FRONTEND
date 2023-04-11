@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import DataContext from "../contexts/Data.Context.js";
+import HealthBar from "./HealthBar.jsx";
 import "../styles/Card.css";
 import roundOffDigits from "../utils/roundOffDigits.js";
 
@@ -45,28 +46,34 @@ const Card = () => {
           <div className="data-item">
             <div>PM2.5</div>
             <div>{getPollutantValue("pm2.5cnc")}</div>
+            <HealthBar value={getPollutantValue("pm2.5cnc") ?? 0} />
           </div>
           <div className="data-item">
             <div>PM10</div>
             <div>{getPollutantValue("pm10cnc")}</div>
+            <HealthBar value={getPollutantValue("pm10cnc") ?? 0} />
           </div>
           <div className="data-item">
             <div>SO2</div>
             <div>{getPollutantValue("so2ppb")}</div>
+            <HealthBar value={getPollutantValue("so2ppb") ?? 0} />
           </div>
         </div>
         <div className="data-row">
           <div className="data-item">
             <div>NO2</div>
             <div>{getPollutantValue("no2ppb")}</div>
+            <HealthBar value={getPollutantValue("no2ppb") ?? 0} />
           </div>
           <div className="data-item">
             <div>O3</div>
             <div>{getPollutantValue("o3ppb")}</div>
+            <HealthBar value={getPollutantValue("o3ppb") ?? 0} />
           </div>
           <div className="data-item">
             <div>CO</div>
             <div>{getPollutantValue("co")}</div>
+            <HealthBar value={getPollutantValue("co") ?? 0} />
           </div>
         </div>
       </div>
