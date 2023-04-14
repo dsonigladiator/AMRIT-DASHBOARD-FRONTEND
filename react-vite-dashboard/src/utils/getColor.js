@@ -1,7 +1,15 @@
+// This function returns the color based on the selected pollutant and the value of the pollutant
+
+// react imports
 import { useContext } from "react";
+
+// context imports
 import DataContext from "../contexts/Data.Context.js";
 
+// function to return the color based on the selected pollutant and the value of the pollutant
 export default function getColor(value) {
+
+    // get the selected pollutant from the context to determine the color scale
     const { selectedPollutant } = useContext(DataContext);
 
     // define color scale based on selectedPollutant value for pm2.5cnc, pm10cnc, so2ppb, no2ppb, o3ppb, co
@@ -40,6 +48,8 @@ export default function getColor(value) {
     let veryDry, dry, normal, humid, veryHumid;
     // define veryCold, cool, warm, hot, veryHot values based on pollutant
     let veryCold, cool, warm, hot, veryHot;
+
+    // set the label and value ranges based on selectedPollutant
     switch (selectedPollutant) {
         case "pm2.5cnc":
             range = 300;
@@ -90,7 +100,7 @@ export default function getColor(value) {
             hazardous = Number.POSITIVE_INFINITY;
             break;
         case "temp":
-            range = 100;
+            range = 273;
             veryCold = 0;
             cool = 24;
             warm = 30;

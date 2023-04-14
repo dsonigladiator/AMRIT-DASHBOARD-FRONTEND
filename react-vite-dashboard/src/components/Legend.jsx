@@ -1,11 +1,19 @@
+// This component is used to display the legend for the map
+
+// React Imports
 import React, { useContext } from "react";
+
+// Context Imports
 import DataContext from "../contexts/Data.Context.js";
+
+// style imports
 import "../styles/Legend.css";
-import getColor from "../utils/getColor.js";
 
 const Legend = () => {
+  // import selected pollutant from DataContext
   const { selectedPollutant } = useContext(DataContext);
 
+  // define legend labels based on selected pollutant
   const getLegendLabels = () => {
     switch (selectedPollutant) {
       case "pm2.5cnc":
@@ -29,8 +37,12 @@ const Legend = () => {
     }
   };
 
+  // create legend labels array
   const legendLabels = getLegendLabels();
 
+  // define color scale based on selected pollutant
+  // this is used to set the background color of the legend items
+  // different pollutants have different color scales
   let colorScale;
   switch (selectedPollutant) {
     case "pm2.5cnc":
@@ -61,6 +73,7 @@ const Legend = () => {
   return (
     <div className="legend-container">
       <div className="legend-items">
+        {/* loop over legend labels and create a div for each label */}
         {legendLabels.map((label, index) => (
           <div
             key={index}

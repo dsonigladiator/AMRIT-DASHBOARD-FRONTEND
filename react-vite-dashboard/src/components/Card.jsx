@@ -1,14 +1,28 @@
+// This is a Card component that displays the data of the selected feature on the map
+
+// React Imports
 import React, { useContext } from "react";
+
+// Context Imports
 import DataContext from "../contexts/Data.Context.js";
+
+// Custom Component Imports
 import HealthBar from "./HealthBar.jsx";
+
+// style imports
 import "../styles/Card.css";
+
+// utils imports
 import roundOffDigits from "../utils/roundOffDigits.js";
 
 const Card = () => {
+  // selected feature and its name to be displayed on card
   const { selectedFeatureName } = useContext(DataContext);
   const { selectedFeature } = useContext(DataContext);
 
   // function to get pollutant value from selectedFeature
+  // if value is not present, return "-"
+  // else return the value rounded off to 2 decimal places
   const getPollutantValue = (propertyName) => {
     const propertyValue =
       selectedFeature?.properties?.param_values?.[propertyName];
@@ -24,6 +38,7 @@ const Card = () => {
   return (
     <div className="card-container" style={{ backgroundColor: "#ffe6cc" }}>
       <h3>
+        {/* if selectedFeatureName is not null, display it, else display "-" */}
         <b>{selectedFeatureName ?? "-"}</b>
       </h3>
       <div className="card-item">

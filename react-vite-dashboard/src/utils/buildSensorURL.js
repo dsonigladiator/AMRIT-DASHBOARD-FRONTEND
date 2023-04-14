@@ -1,11 +1,11 @@
-// function to build the URL for the Air Quality API
-function buildAQUrl(baseURL, defaultParameters = {}) {
+// function to build the dynamic URL for the sensor data API
+function buildSensorURL(baseURL, params = {}) {
 
     // Create a URLSearchParams object to hold the query string parameters
     const urlSearchParams = new URLSearchParams();
 
-    // Add non-null default parameters to the URL search params object
-    Object.entries(defaultParameters).forEach(([key, value]) => {
+    // Add non-null parameters to the URL search params object
+    Object.entries(params).forEach(([key, value]) => {
         if (value !== null) {
             urlSearchParams.append(key, value);
         }
@@ -19,4 +19,4 @@ function buildAQUrl(baseURL, defaultParameters = {}) {
     return dynamicURL;
 }
 
-export default buildAQUrl;
+export default buildSensorURL;

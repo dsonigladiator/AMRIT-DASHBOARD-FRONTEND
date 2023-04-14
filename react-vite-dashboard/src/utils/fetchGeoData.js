@@ -1,3 +1,9 @@
+// This function fetches the geojson data from the API
+// It uses the SWR library to cache the data and re-fetch it when the query params change
+// It fetches all the data at once and then filters it based on the query params
+// NOTE: This function is not used in the app, but is kept here for reference
+
+// React imports
 import useSWR from "swr";
 
 // Define fetcher function
@@ -8,15 +14,15 @@ const fetcher = async (url) => {
 };
 
 const fetchGeoData = () => {
-    // state level data
+    // state level data url
     const indiaGeojsonUrl =
         "https://geonode.communitygis.in/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typename=geonode%3AIndia_States_Simplified_V2&outputFormat=json&srs=EPSG%3A4326&srsName=EPSG%3A4326&access_token=P9o1msbwJs4TMF0PosP6tg1ZX0Pcjt";
 
-    // division level data
+    // division level data url
     const allDivisionDataUrl =
         "https://geonode.communitygis.in/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typename=geonode%3AIndia_Divisions_Merged_V1&outputFormat=json&srs=EPSG%3A4326&srsName=EPSG%3A4326&access_token=0mU5RiHQRcUmsFQbBrghUOmrEwM0OX";
 
-    // district level data
+    // district level data url
     const allDistrictDataUrl =
         "https://geonode.communitygis.in/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typename=geonode%3AIndia_Districts_Merged_Simplified_V1&outputFormat=json&srs=EPSG%3A4326&srsName=EPSG%3A4326&access_token=0mU5RiHQRcUmsFQbBrghUOmrEwM0OX";
 

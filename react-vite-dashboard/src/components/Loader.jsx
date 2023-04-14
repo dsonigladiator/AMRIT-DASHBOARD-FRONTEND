@@ -1,4 +1,9 @@
+// This component is used to show a loader when the page is loading
+
+// React Imports
 import React from "react";
+
+// Custom Component Imports from external libraries
 import { MoonLoader } from "react-spinners";
 
 const Loader = () => {

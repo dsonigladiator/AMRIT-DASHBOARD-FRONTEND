@@ -1,3 +1,6 @@
+//This is the main map component. It is responsible for rendering the map and handling all the drill down and drill up functionality.
+
+// React Imports
 import React, {
   useState,
   useContext,
@@ -5,23 +8,32 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
+
+// Context Imports
 import DataContext from "../contexts/Data.Context.js";
+
+// React Leaflet Imports
 import { MapContainer, TileLayer } from "react-leaflet";
 import { GeoJSON } from "react-leaflet";
-import "../styles/Map.css";
-// import "../styles/DrillUpButton.css";
-import DrillUpButton from "./DrillUpButton.jsx";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-// import getColor from "../utils/getColor";
-import fetchAQData from "../utils/fetchAQData.js";
+
+// Custom Component Imports
+import DrillUpButton from "./DrillUpButton.jsx";
 import ZoomtoBounds from "./ZoomToBounds";
+
+// api imports
+import fetchAQData from "../utils/fetchAQData.js";
+import getGeoDataV2 from "../utils/fetchGeoDataV2.js";
+import fetchSensorData from "../utils/fetchSensorData.js";
+
+// style imports
+import "../styles/Map.css";
 import {
   indiaGeoJSONStyleV1,
   divisionGeoJSONStyleV1,
   districtGeoJSONStyleV1,
 } from "../utils/geojsonStyles.js";
-import getGeoDataV2 from "../utils/fetchGeoDataV2.js";
 
 // import icon from 'leaflet/dist/images/marker-icon.png';
 // import iconShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -30,23 +42,43 @@ import getGeoDataV2 from "../utils/fetchGeoDataV2.js";
 //   iconUrl: icon,
 //   shadowUrl: iconShadow
 // });
+
+// layer names as defined in geoserver
 const stateDataLayerName = "geonode:India_States_Simplified_V2";
 const divisionDataLayerName = "geonode:India_Divisions_Merged_V1";
 const districtDataLayerName = "geonode:India_Districts_Merged_Simplified_V1";
 
 // global variables
 const mapCenter = [23.5937, 80.9629];
-var filteredDistrictsGeojson;
-var filteredDivisionsGeojson;
 
 // Main Map component
-function LeafletMap(props) {
-  const { statesData } = props;
+function LeafletMap() {
+  // get data from context
+  // geo data
+  const { statesData } = useContext(DataContext);
+  const { filteredDivisionsGeojson, setFilteredDivisionGeojson } =
+    useContext(DataContext);
+  const { filteredDistrictsGeojson, setFilteredDistrictsGeojson } =
+    useContext(DataContext);
+
+  // sensor data
+  const { statesSensorData, setStatesSensorData } = useContext(DataContext);
+  const { divisionsSensorData, setDivisionsSensorData } =
+    useContext(DataContext);
+  const { districtsSensorData, setDistrictsSensorData } =
+    useContext(DataContext);
+  const { localSensorData, setLocalSensorData } = useContext(DataContext);
+
+  // selected feature and feature name
   const { selectedFeature, setSelectedFeature } = useContext(DataContext);
   const { setSelectedFeatureName } = useContext(DataContext);
 
+  // layer number
   const { layerNo, setLayerNo } = useContext(DataContext);
+
+  // loading state
   const { isLoading, setIsLoading } = useContext(DataContext);
+
   // set initial currentLayer to "India" (State Level)
   const { currentLayer, setCurrentLayer } = useContext(DataContext);
 
@@ -55,15 +87,8 @@ function LeafletMap(props) {
 
   // some useState variables
   const { setHasDrilledDown } = useContext(DataContext);
-  const { filteredDivisionsGeojson, setFilteredDivisionGeojson } =
-    useContext(DataContext);
-  const { filteredDistrictsGeojson, setFilteredDistrictsGeojson } =
-    useContext(DataContext);
 
-  // set some bounds for drill up
-  var indiaBounds = L.geoJSON(statesData).getBounds();
-  var filteredDivisionBounds = L.geoJSON(filteredDivisionsGeojson).getBounds();
-  // var districtBounds;
+  // global variables in this component
   var featureBounds;
 
   // variable to track drill up and drill down;
@@ -74,6 +99,7 @@ function LeafletMap(props) {
   // var layerNo = 1;
 
   // function to handle single click on feature
+  // this updates the card component header
   function onFeatureClick(e) {
     var featureName;
     var selectedFeature = e.target.feature;
@@ -110,16 +136,23 @@ function LeafletMap(props) {
   function stateDrillDown(e) {
     // const stateName = e.target.feature.properties.state.toLowerCase();
     const stateName = e.target.feature.properties.state;
+    const stateID = e.target.feature.properties.id;
     var clickedFeature = e;
     var stateBounds = e.target._bounds;
     featureBounds = stateBounds;
 
     const cql_filter = `state=\'${stateName.toUpperCase()}\'`;
 
-    // build queryParams object
-    const queryParams = {
+    // build AQDataQueryParams object
+    const AQDataQueryParams = {
       admin_level: "division",
       params: "pm2.5cnc,pm10cnc,temp,humidity,so2ppb,no2ppb,o3ppb,co",
+    };
+
+    // build sensorDataQueryParams object
+    const sensorDataQueryParams = {
+      admin_level: "state",
+      admin_id: stateID,
     };
 
     // fetch division data and do something with it
@@ -128,9 +161,38 @@ function LeafletMap(props) {
       setIsLoading(true);
 
       // first fetch AQ Data
-      const AQData = await fetchAQData(queryParams);
+      const AQData = await fetchAQData(AQDataQueryParams);
       // console.log("AQ Data: ");
       // console.log(AQData);
+
+      // then fetch sensor data for all divisions in the state
+      const sensorData = await fetchSensorData(sensorDataQueryParams);
+      console.log("Sensor Data: ");
+      console.log(sensorData);
+
+      /// create GeoJSON FeatureCollection from the fetched sensor data
+      const sensorFeatures = sensorData.data
+        .filter((sensor) => sensor.lat && sensor.lon) // filter out invalid lat/lon values
+        .map((sensor) => ({
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [sensor.lon, sensor.lat],
+          },
+          properties: {
+            district_id: sensor.district_id,
+            division_id: sensor.division_id,
+            state_id: sensor.state_id,
+            imei_id: sensor.imei_id,
+            updated_time: sensor.updated_time,
+          },
+        }));
+      const sensorGeoJSON = {
+        type: "FeatureCollection",
+        features: sensorFeatures,
+      };
+      console.log("Sensor GeoJSON: ");
+      console.log(sensorGeoJSON);
 
       // then fetch Geo Data
       const { data, isLoading, isError } = await getGeoDataV2(
@@ -185,6 +247,7 @@ function LeafletMap(props) {
         "division"
       );
       setFilteredDivisionGeojson(filteredDivisionGeojson);
+      setDivisionsSensorData(sensorGeoJSON);
       setIsLoading(false);
 
       // handle data loading and error state
@@ -235,10 +298,16 @@ function LeafletMap(props) {
 
     const cql_filter = `division=\'${divisionName}\'`;
 
-    // build queryParams object
-    const queryParams = {
+    // build AQDataQueryParams object
+    const AQDataQueryParams = {
       admin_level: "district",
       params: "pm2.5cnc,pm10cnc,temp,humidity,so2ppb,no2ppb,o3ppb,co",
+    };
+
+    // build sensorDataQueryParams object
+    const sensorDataQueryParams = {
+      admin_level: "division",
+      admin_id: divisionID,
     };
 
     // fetch division data and do something with it
@@ -247,9 +316,38 @@ function LeafletMap(props) {
       setIsLoading(true);
 
       // first fetch AQ Data
-      const AQData = await fetchAQData(queryParams);
+      const AQData = await fetchAQData(AQDataQueryParams);
       // console.log("AQ Data: ");
       // console.log(AQData);
+
+      // then fetch sensor data for all districts in the selected division
+      const sensorData = await fetchSensorData(sensorDataQueryParams);
+      console.log("Sensor Data: ");
+      console.log(sensorData);
+
+      // create GeoJSON FeatureCollection from the fetched sensor data
+      const sensorFeatures = sensorData.data
+        .filter((sensor) => sensor.lat && sensor.lon) // filter out invalid lat/lon values
+        .map((sensor) => ({
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [sensor.lon, sensor.lat],
+          },
+          properties: {
+            district_id: sensor.district_id,
+            division_id: sensor.division_id,
+            state_id: sensor.state_id,
+            imei_id: sensor.imei_id,
+            updated_time: sensor.updated_time,
+          },
+        }));
+      const sensorGeoJSON = {
+        type: "FeatureCollection",
+        features: sensorFeatures,
+      };
+      console.log("Sensor GeoJSON: ");
+      console.log(sensorGeoJSON);
 
       // then fetch Geo Data
       const { data, isLoading, isError } = await getGeoDataV2(
@@ -304,6 +402,7 @@ function LeafletMap(props) {
         "district"
       );
       setFilteredDistrictsGeojson(filteredDistrictsGeojson);
+      setDistrictsSensorData(sensorGeoJSON);
       setIsLoading(false);
 
       // handle data loading and error state
@@ -345,12 +444,62 @@ function LeafletMap(props) {
 
   // function to handle  click on a District
   function districtDrillDown(e) {
-    var sensorGeoData;
-    const districtID = e.target.feature.properties.district_id;
+    const districtID = e.target.feature.properties.id;
     const districtName = e.target.feature.properties.district;
     featureBounds = e.target._bounds;
-    // setSelectedFeature(districtName);
-    setBounds(featureBounds);
+
+    // fetch local sensor data for the selected district
+    const sensorDataQueryParams = {
+      admin_level: "district",
+      district_id: districtID,
+    };
+
+    const getData = async () => {
+      setIsLoading(true);
+      try {
+        const sensorData = await fetchSensorData(sensorDataQueryParams);
+        console.log("Sensor Data: ");
+        console.log(sensorData);
+
+        // create GeoJSON FeatureCollection from the fetched sensor data
+        const sensorFeatures = sensorData.data
+          .filter((sensor) => sensor.lat && sensor.lon) // filter out invalid lat/lon values
+          .map((sensor) => ({
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [sensor.lon, sensor.lat],
+            },
+            properties: {
+              district_id: sensor.district_id,
+              division_id: sensor.division_id,
+              state_id: sensor.state_id,
+              imei_id: sensor.imei_id,
+              updated_time: sensor.updated_time,
+            },
+          }));
+        const sensorGeoJSON = {
+          type: "FeatureCollection",
+          features: sensorFeatures,
+        };
+        console.log("Sensor GeoJSON: ");
+        console.log(sensorGeoJSON);
+
+        setLocalSensorData(sensorGeoJSON);
+        setBounds(featureBounds);
+        setCurrentLayer("Local");
+        setHasDrilledDown(true);
+      } catch (error) {
+        console.log("Error fetching sensor data:", error);
+        setLocalSensorData(null); // reset the local sensor data
+        setBounds(featureBounds);
+        setCurrentLayer("District");
+        setHasDrilledDown(false);
+      }
+      setIsLoading(false);
+    };
+
+    getData();
   }
 
   //===============================================================
@@ -384,6 +533,7 @@ function LeafletMap(props) {
   //===============================================================
 
   // Render map layers based on currentLayer state
+  // Polygon Layers
   // India States Layer
   const IndiaLayer = () => {
     return (
@@ -432,6 +582,27 @@ function LeafletMap(props) {
     );
   };
 
+  // Marker Layers
+  // State Sensor Markers
+  const StateSensorsLayer = () => {
+    return <GeoJSON data={statesSensorData} />;
+  };
+
+  // Division Sensor Markers
+  const DivisionSensorsLayer = () => {
+    return <GeoJSON data={divisionsSensorData} />;
+  };
+
+  // District Sensor Markers
+  const DistrictSensorsLayer = () => {
+    return <GeoJSON data={districtsSensorData} />;
+  };
+
+  // Local Sensor Markers
+  const LocalSensorsLayer = () => {
+    return <GeoJSON data={localSensorData} />;
+  };
+
   return (
     <MapContainer
       center={mapCenter}
@@ -443,11 +614,25 @@ function LeafletMap(props) {
       maxZoom={14}
     >
       <TileLayer url="https://api.mapbox.com/styles/v1/divcsoni99/clf9jbl3d004501qolng7pt76/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZGl2Y3Nvbmk5OSIsImEiOiJjbGYydHV1NDgwNWoyM3NvMXR4bXZra2VyIn0._t8rySAgLoxsMRl0UwvBUg" />
-      {/* Render map layers based on currentLayer state */}
+      {/* Render map layers based on currentLayer value */}
+
+      {/* State GeoJSON Layers */}
+      {currentLayer === "State" && <StateSensorsLayer />}
       {currentLayer === "State" && <IndiaLayer />}
+
+      {/* Division GeoJSON Layers */}
+      {currentLayer === "Division" && <DivisionSensorsLayer />}
       {currentLayer === "Division" && <FilteredDivisionLayer />}
+
+      {/* Division GeoJSON Layers */}
+      {currentLayer === "District" && <DistrictSensorsLayer />}
       {currentLayer === "District" && <FilteredDistrictLayer />}
-      {/* {hasDrilledDown && <DrillUpButton />} */}
+
+      {/* Local GeoJSON Layers */}
+      {currentLayer === "Local" && <LocalSensorsLayer />}
+      {currentLayer === "Local" && <FilteredDistrictLayer />}
+
+      {/* Fit Map Bounds */}
       {bounds.length !== 0 && <ZoomtoBounds bounds={bounds} />}
     </MapContainer>
   );

@@ -1,39 +1,35 @@
-// This function fetches the air quality data from the API
+// This function fetches the sensor IMEI data from the API as point data
 
 // util imports
-import buildAQUrl from "./buildAqURL.js";
+import buildSensorURL from "./buildSensorURL.js";
 
-// function to fetch the air quality data from the API asynchonously
-async function fetchAQData(queryParams) {
+// function to fetch the sensor IMEI data from the API asynchonously
+async function fetchSensorData(queryParams) {
 
-    // Define the base URL and default parameters
-    const baseURL = "http://18.221.91.95:81/data";
+    // Define the base URL and default parameters for Sensor API
+    const baseURL = "http://18.221.91.95:81/devices";
     const defaultParams = {
         admin_level: null,
-        params: null,
         admin_id: null,
-        from_date: null,
-        to_date: null,
-        sampling: null,
-        sampling_value: null,
     };
 
     // Merge the default params with the query params
     const mergedParams = { ...defaultParams, ...queryParams };
 
     // Build the dynamic URL using the merged params
-    const dynamicURL = buildAQUrl(baseURL, mergedParams);
+    const dynamicURL = buildSensorURL(baseURL, mergedParams);
 
+    // Fetch the data from the dynamic URL
     try {
         // Fetch the data from the dynamic URL
         const response = await fetch(dynamicURL);
 
-        // Check that the response is OK, if not throw an error
+        // Check that the response is OK
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        // Check that the response is JSON, if not throw an error
+        // Check that the response is JSON
         const contentType = response.headers.get("Content-Type");
         if (!contentType || !contentType.includes("application/json")) {
             throw new Error("Invalid response type. Expected JSON");
@@ -47,9 +43,9 @@ async function fetchAQData(queryParams) {
     }
     catch (error) {
         // Log the error and re-throw it if necessary
-        console.error(`Error fetching air quality data: ${error}`);
+        console.error(`Error fetching sensor data: ${error}`);
         throw error;
     }
 }
 
-export default fetchAQData;
+export default fetchSensorData;

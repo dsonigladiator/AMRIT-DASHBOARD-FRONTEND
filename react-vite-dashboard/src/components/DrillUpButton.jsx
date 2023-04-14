@@ -1,3 +1,6 @@
+// This component is used to drill up from lower layers to higher layers
+
+// React Imports
 import React, {
   useCallback,
   useMemo,
@@ -5,30 +8,42 @@ import React, {
   useContext,
   useEffect,
 } from "react";
+
+// Context Imports
 import DataContext from "../contexts/Data.Context.js";
+
+// style imports
 import "../styles/DrillUpButton.css";
+
+// Leaflet Imports
 import L from "leaflet";
 
 function DrillUpButton() {
+  // layer number and current layer
   const { layerNo, setLayerNo } = useContext(DataContext);
   const { currentLayer, setCurrentLayer } = useContext(DataContext);
+
+  // bounds and hasDrilledDown and isVisble
   const { bounds, setBounds } = useContext(DataContext);
   const { hasDrilledDown, setHasDrilledDown } = useContext(DataContext);
+  const [isVisible, setIsVisible] = useState(false);
+
+  // geo data
   const { filteredDivisionGeojson, setFilteredDivisionGeojson } =
     useContext(DataContext);
   const { filteredDistrictsGeojson, setFilteredDistrictsGeojson } =
     useContext(DataContext);
-  const { setSelectedFeature } = useContext(DataContext);
-  const [isVisible, setIsVisible] = useState(false);
   const { statesData } = useContext(DataContext);
   const { filteredDivisionsGeojson } = useContext(DataContext);
+
+  // selected feature
+  const { setSelectedFeature } = useContext(DataContext);
 
   // set some bounds for drill up
   var indiaBounds = L.geoJSON(statesData).getBounds();
   var filteredDivisionBounds = L.geoJSON(filteredDivisionsGeojson).getBounds();
-  // var districtBounds;
-  var featureBounds;
 
+  // layer name to be displayed on button
   const layerName = useMemo(() => {
     if (layerNo === 2) {
       return "State";
@@ -39,6 +54,7 @@ function DrillUpButton() {
     }
   }, [layerNo]);
 
+  // drill up function
   const drillUp = () => {
     // district layer -> division layer
     if (layerNo === 3) {
@@ -63,6 +79,7 @@ function DrillUpButton() {
     }
   };
 
+  // set visibility of button
   useEffect(() => {
     setIsVisible(hasDrilledDown);
   }, [hasDrilledDown]);

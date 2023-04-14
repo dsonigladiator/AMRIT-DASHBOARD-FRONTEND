@@ -1,52 +1,83 @@
-// import LeafletMap from "/components/Map.jsx";
-// import LeafletMap1 from "./Map1";
+// This is the main component that renders the entire app
+
+// React Imports
+import React, { useState, useEffect } from "react";
+
+// Custom Component Imports to be used in App
 import LeafletMap from "./Map";
-import "../styles/styles.css";
 import Controls from "./Controls";
 import Card from "./Card";
 import Loader from "./Loader";
 import DrillUpButton from "./DrillUpButton";
 import Legend from "./Legend";
 
-// import useSWR from "swr";
-import React, { useState, useEffect } from "react";
-import DataContext from "../contexts/Data.Context";
-import fetchAQData from "../utils/fetchAQData.js";
-// import fetchGeoData from "./Utils/fetchGeoData.js";
-import getGeoDataV2 from "../utils/fetchGeoDataV2";
-import GeoDataError from "./GeoDataError";
-import GeoDataLoading from "./GeoDataLoading";
+// style imports
+import "../styles/styles.css";
 
+// Context Imports
+import DataContext from "../contexts/Data.Context";
+
+// api imports
+import fetchAQData from "../utils/fetchAQData.js";
+import getGeoDataV2 from "../utils/fetchGeoDataV2";
+import fetchSensorData from "../utils/fetchSensorData";
+
+// main App component
 export default function App() {
   // define global variables and state variables
+
+  // current date
   const [currentDate, setCurrentDate] = useState(Date.now());
+
+  // selected feature and its name
   const [selectedFeature, setSelectedFeature] = useState(null);
   const [selectedFeatureName, setSelectedFeatureName] =
     useState("Select feature");
+
+  // selected pollutant
   const [selectedPollutant, setSelectedPollutant] = useState("pm2.5cnc");
+
+  // layer number and current layer
   const [layerNo, setLayerNo] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
   const [currentLayer, setCurrentLayer] = useState("State");
-  const [bounds, setBounds] = useState([]);
+
+  // loading state and drill down state
+  const [isLoading, setIsLoading] = useState(false);
   const [hasDrilledDown, setHasDrilledDown] = useState(false);
+
+  // map bounds
+  const [bounds, setBounds] = useState([]);
+
+  // geo data names
   const [selectedState, setSelectedState] = useState(null);
   const [selectedDivision, setSelectedDivision] = useState(null);
 
+  // geo data variables
   const [statesData, setStatesData] = useState([]);
   const [filteredDivisionsGeojson, setFilteredDivisionGeojson] = useState(null);
   const [filteredDistrictsGeojson, setFilteredDistrictsGeojson] =
     useState(null);
+  const [statesSensorData, setStatesSensorData] = useState([]);
+  const [divisionsSensorData, setDivisionsSensorData] = useState([]);
+  const [districtsSensorData, setDistrictsSensorData] = useState([]);
+  const [localSensorData, setLocalSensorData] = useState([]);
 
+  // define layer names
   const stateDataLayerName = "geonode:India_States_Simplified_V2";
-  const divisionDataLayerName = "geonode:India_Divisions_Merged_V1";
-  const districtDataLayerName = "geonode:India_Districts_Merged_Simplified_V1";
+  // const divisionDataLayerName = "geonode:India_Divisions_Merged_V1";
+  // const districtDataLayerName = "geonode:India_Districts_Merged_Simplified_V1";
 
-  // fetch all states Data
+  // fetch all geo data and AQ data and merge them
   useEffect(() => {
-    // build queryParams object
-    const queryParams = {
+    // build AQDataQueryParams object
+    const AQDataQueryParams = {
       admin_level: "state",
       params: "pm2.5cnc,pm10cnc,temp,humidity,so2ppb,no2ppb,o3ppb,co",
+    };
+
+    // build sensorDataQueryParams object
+    const sensorDataQueryParams = {
+      admin_level: "state",
     };
 
     const getData = async () => {
@@ -54,9 +85,38 @@ export default function App() {
       setIsLoading(true);
 
       // first fetch AQ Data
-      const AQData = await fetchAQData(queryParams);
+      const AQData = await fetchAQData(AQDataQueryParams);
       console.log("AQ Data: ");
       console.log(AQData);
+
+      // fetch sensor data
+      const sensorData = await fetchSensorData(sensorDataQueryParams);
+      console.log("States Sensor Data: ");
+      console.log(sensorData);
+
+      // create GeoJSON FeatureCollection from the fetched sensor data
+      const sensorFeatures = sensorData.data
+        .filter((sensor) => sensor.lat && sensor.lon) // filter out invalid lat/lon values
+        .map((sensor) => ({
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [sensor.lon, sensor.lat],
+          },
+          properties: {
+            district_id: sensor.district_id,
+            division_id: sensor.division_id,
+            state_id: sensor.state_id,
+            imei_id: sensor.imei_id,
+            updated_time: sensor.updated_time,
+          },
+        }));
+      const sensorGeoJSON = {
+        type: "FeatureCollection",
+        features: sensorFeatures,
+      };
+      console.log("States Sensor GeoJSON: ");
+      console.log(sensorGeoJSON);
 
       // then fetch Geo Data
       const { data, statesLoading, statesError } = await getGeoDataV2(
@@ -106,6 +166,7 @@ export default function App() {
       // Example usage:
       const filteredStatesGeojson = mergeAQAndGeoData(AQData, data, "state");
       setStatesData(filteredStatesGeojson);
+      setStatesSensorData(sensorGeoJSON);
       setIsLoading(false);
 
       while (statesLoading) {
@@ -116,10 +177,12 @@ export default function App() {
         console.log("Error in loading States Data!");
       }
     };
+
     getData();
   }, []);
 
   return (
+    // pass all the data and functions to the context provider
     <DataContext.Provider
       value={{
         currentDate,
@@ -150,13 +213,22 @@ export default function App() {
         setSelectedState,
         selectedDivision,
         setSelectedDivision,
+        statesSensorData,
+        setStatesSensorData,
+        divisionsSensorData,
+        setDivisionsSensorData,
+        districtsSensorData,
+        setDistrictsSensorData,
+        localSensorData,
+        setLocalSensorData,
       }}
     >
       <div className="App">
+        {/* display loading spinner if data is loading */}
         {isLoading && <Loader />}
         <Controls />
         <Card />
-        <LeafletMap statesData={statesData} />
+        <LeafletMap />
         <Legend />
         <DrillUpButton />
       </div>
