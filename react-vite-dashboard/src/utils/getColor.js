@@ -4,19 +4,42 @@ import DataContext from "../contexts/Data.Context.js";
 export default function getColor(value) {
     const { selectedPollutant } = useContext(DataContext);
 
-    // define color scale based on selectedPollutant value
-    const colorScale = [
+    // define color scale based on selectedPollutant value for pm2.5cnc, pm10cnc, so2ppb, no2ppb, o3ppb, co
+    const colorScale1 = [
         "#00E400",
         "#FFFF00",
         "#FF7E00",
         "#FF0000",
-        "#8F3F97",
         "#7E0023",
+    ];
+
+    // define color scale based on selectedPollutant value for temp
+    const colorScale2 = [
+        "#053061",
+        "#2166ac",
+        "#fddbc7",
+        "#d6604d",
+        "#b2182b",
+        "#7E0023",
+    ];
+
+    // define color scale based on selectedPollutant value for humidity
+    const colorScale3 = [
+        "#b9fdff",
+        "#a9dcf4",
+        "#9da6e5",
+        "#cc86ec",
+        "#f288ff",
     ];
 
     // define value ranges based on pollutant
     let range;
+    // define good, fair, poor, veryPoor, hazardous values based on pollutant
     let good, fair, poor, veryPoor, hazardous;
+    // define veryDry, dry, normal, humid, veryHumid values based on pollutant
+    let veryDry, dry, normal, humid, veryHumid;
+    // define veryCold, cool, warm, hot, veryHot values based on pollutant
+    let veryCold, cool, warm, hot, veryHot;
     switch (selectedPollutant) {
         case "pm2.5cnc":
             range = 300;
@@ -67,20 +90,20 @@ export default function getColor(value) {
             hazardous = Number.POSITIVE_INFINITY;
             break;
         case "temp":
-            range = 50;
-            good = -10;
-            fair = 10;
-            poor = 30;
-            veryPoor = 40;
-            hazardous = Number.POSITIVE_INFINITY;
+            range = 100;
+            veryCold = 0;
+            cool = 24;
+            warm = 30;
+            hot = 36;
+            veryHot = 40;
             break;
         case "humidity":
             range = 100;
-            good = 30;
-            fair = 50;
-            poor = 70;
-            veryPoor = 90;
-            hazardous = Number.POSITIVE_INFINITY;
+            veryDry = 0;
+            dry = 20;
+            normal = 40;
+            humid = 60;
+            veryHumid = 80;
             break;
         default:
             range = 300;
@@ -94,20 +117,67 @@ export default function getColor(value) {
 
     // define color based on value and selectedPollutant
     let color;
-    if (value <= good) {
-        color = colorScale[0];
-    } else if (value <= fair) {
-        color = colorScale[1];
-    } else if (value <= poor) {
-        color = colorScale[2];
-    } else if (value <= veryPoor) {
-        color = colorScale[3];
-    } else if (value <= hazardous) {
-        color = colorScale[4];
-    } else {
-        color = colorScale[5];
+
+    // if pollutant is pm2.5cnc, pm10cnc, so2ppb, no2ppb, o3ppb, or co use colorScale1
+    if (
+        selectedPollutant === "pm2.5cnc" ||
+        selectedPollutant === "pm10cnc" ||
+        selectedPollutant === "so2ppb" ||
+        selectedPollutant === "no2ppb" ||
+        selectedPollutant === "o3ppb" ||
+        selectedPollutant === "co"
+    ) {
+
+        if (value <= good) {
+            color = colorScale1[0];
+        } else if (value <= fair) {
+            color = colorScale1[1];
+        } else if (value <= poor) {
+            color = colorScale1[2];
+        } else if (value <= veryPoor) {
+            color = colorScale1[3];
+        } else if (value <= hazardous) {
+            color = colorScale1[4];
+        } else {
+            color = colorScale1[5];
+        }
     }
 
+    // if pollutant is temp use colorScale2
+    if (selectedPollutant === "temp") {
+        if (value <= veryCold) {
+            color = colorScale2[0];
+        } else if (value <= cool) {
+            color = colorScale2[1];
+        } else if (value <= warm) {
+            color = colorScale2[2];
+        } else if (value <= hot) {
+            color = colorScale2[3];
+        } else if (value <= veryHot) {
+            color = colorScale2[4];
+        } else {
+            color = colorScale2[5];
+        }
+    }
+
+    // if pollutant is humidity use colorScale3
+    if (selectedPollutant === "humidity") {
+        if (value <= veryDry) {
+            color = colorScale3[0];
+        } else if (value <= dry) {
+            color = colorScale3[1];
+        } else if (value <= normal) {
+            color = colorScale3[2];
+        } else if (value <= humid) {
+            color = colorScale3[3];
+        } else if (value <= veryHumid) {
+            color = colorScale3[4];
+        } else {
+            color = colorScale3[5];
+        }
+    }
+
+    // return color based on value and selectedPollutant
     return color;
 }
 

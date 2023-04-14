@@ -13,7 +13,6 @@ function DrillUpButton() {
   const { layerNo, setLayerNo } = useContext(DataContext);
   const { currentLayer, setCurrentLayer } = useContext(DataContext);
   const { bounds, setBounds } = useContext(DataContext);
-  //   const [drillDownState, setDrillDownState] = useState([]);
   const { hasDrilledDown, setHasDrilledDown } = useContext(DataContext);
   const { filteredDivisionGeojson, setFilteredDivisionGeojson } =
     useContext(DataContext);
@@ -41,19 +40,25 @@ function DrillUpButton() {
   }, [layerNo]);
 
   const drillUp = () => {
+    // district layer -> division layer
     if (layerNo === 3) {
       setCurrentLayer("Division");
       setBounds(filteredDivisionBounds);
       setFilteredDistrictsGeojson(null);
       setLayerNo(layerNo - 1);
-    } else if (layerNo === 2) {
+      setSelectedFeature("Select Feature");
+    }
+    // division layer -> state layer
+    else if (layerNo === 2) {
       setCurrentLayer("State");
       setBounds(indiaBounds);
       setFilteredDivisionGeojson(null);
       setLayerNo(layerNo - 1);
-      setSelectedFeature("Click Feature");
+      setSelectedFeature("Select Feature");
       setHasDrilledDown(false);
-    } else if (layerNo === 1) {
+    }
+    // state layer -> no drill up possible
+    else if (layerNo === 1) {
       alert("No drill up possible at this level.");
     }
   };

@@ -6,6 +6,7 @@ import Controls from "./Controls";
 import Card from "./Card";
 import Loader from "./Loader";
 import DrillUpButton from "./DrillUpButton";
+import Legend from "./Legend";
 
 // import useSWR from "swr";
 import React, { useState, useEffect } from "react";
@@ -28,6 +29,8 @@ export default function App() {
   const [currentLayer, setCurrentLayer] = useState("State");
   const [bounds, setBounds] = useState([]);
   const [hasDrilledDown, setHasDrilledDown] = useState(false);
+  const [selectedState, setSelectedState] = useState(null);
+  const [selectedDivision, setSelectedDivision] = useState(null);
 
   const [statesData, setStatesData] = useState([]);
   const [filteredDivisionsGeojson, setFilteredDivisionGeojson] = useState(null);
@@ -143,6 +146,10 @@ export default function App() {
         setFilteredDistrictsGeojson,
         hasDrilledDown,
         setHasDrilledDown,
+        selectedState,
+        setSelectedState,
+        selectedDivision,
+        setSelectedDivision,
       }}
     >
       <div className="App">
@@ -150,6 +157,7 @@ export default function App() {
         <Controls />
         <Card />
         <LeafletMap statesData={statesData} />
+        <Legend />
         <DrillUpButton />
       </div>
     </DataContext.Provider>

@@ -35,34 +35,26 @@ const divisionDataLayerName = "geonode:India_Divisions_Merged_V1";
 const districtDataLayerName = "geonode:India_Districts_Merged_Simplified_V1";
 
 // global variables
-const mapCenter = [23.5937, 78.9629];
+const mapCenter = [23.5937, 80.9629];
 var filteredDistrictsGeojson;
 var filteredDivisionsGeojson;
 
 // Main Map component
 function LeafletMap(props) {
   const { statesData } = props;
-  const { setSelectedFeature } = useContext(DataContext);
+  const { selectedFeature, setSelectedFeature } = useContext(DataContext);
   const { setSelectedFeatureName } = useContext(DataContext);
+
   const { layerNo, setLayerNo } = useContext(DataContext);
   const { isLoading, setIsLoading } = useContext(DataContext);
   // set initial currentLayer to "India" (State Level)
   const { currentLayer, setCurrentLayer } = useContext(DataContext);
-  // const [currentLayer, setCurrentLayer] = useState("State");
 
   // set initial bounds of map
-  // const [bounds, setBounds] = useState([]);
   const { bounds, setBounds } = useContext(DataContext);
 
   // some useState variables
-  const [drillDownState, setDrillDownState] = useState([]);
-  // const [hasDrilledDown, setHasDrilledDown] = useState(false);
-  const { hasDrilledDown, setHasDrilledDown } = useContext(DataContext);
-  // const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  // const [filteredDivisionsGeojson, setFilteredDivisionGeojson] = useState(null);
-  // const [filteredDistrictsGeojson, setFilteredDistrictsGeojson] =
-  //   useState(null);
+  const { setHasDrilledDown } = useContext(DataContext);
   const { filteredDivisionsGeojson, setFilteredDivisionGeojson } =
     useContext(DataContext);
   const { filteredDistrictsGeojson, setFilteredDistrictsGeojson } =
@@ -116,7 +108,8 @@ function LeafletMap(props) {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // function to handle double-click on State
   function stateDrillDown(e) {
-    const stateName = e.target.feature.properties.state.toLowerCase();
+    // const stateName = e.target.feature.properties.state.toLowerCase();
+    const stateName = e.target.feature.properties.state;
     var clickedFeature = e;
     var stateBounds = e.target._bounds;
     featureBounds = stateBounds;
@@ -380,103 +373,7 @@ function LeafletMap(props) {
   ////////////////////////////////////////////  DRILL UP /////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  // create DrillUpButton component to display on the map during drill up
-  // function DrillUpButton() {
-  //   const { layerNo } = useContext(DataContext);
-  //   const [isVisible, setIsVisible] = useState(false);
-  //   // const [layerName, setLayerName] = React.useState("");
-  //   const [layerName, setLayerName] = useState("");
-
-  //   React.useEffect(() => {
-  //     setIsVisible(hasDrilledDown);
-  //     if (layerNo === 2) {
-  //       setLayerName("State");
-  //     } else if (layerNo === 3) {
-  //       setLayerName("Division");
-  //     } else if (layerNo === 1) {
-  //       setIsVisible(false);
-  //     }
-  //   }, [hasDrilledDown, layerNo]);
-
-  //   function drillUp() {
-  //     if (layerNo === 3) {
-  //       setCurrentLayer("Division");
-  //       setBounds(filteredDivisionBounds);
-  //       setFilteredDistrictsGeojson(null);
-  //       setLayerNo(layerNo - 1);
-  //     } else if (layerNo === 2) {
-  //       setCurrentLayer("State");
-  //       setBounds(indiaBounds);
-  //       setFilteredDivisionGeojson(null);
-  //       setLayerNo(layerNo - 1);
-  //       setSelectedFeature("Click Feature");
-  //     } else if (layerNo === 1) {
-  //       alert("No drill up possible at this level.");
-  //     }
-  //   }
-
-  //   return (
-  //     <button
-  //       className={`drillup-btn ${isVisible ? "visible" : "hidden"}`}
-  //       onClick={drillUp}
-  //     >
-  //       Drill Up to {layerName} Level
-  //     </button>
-  //   );
-  // }
-
-  // function DrillUpButton() {
-  //   const { layerNo } = useContext(DataContext);
-  //   const [isVisible, setIsVisible] = useState(false);
-
-  //   const layerName = useMemo(() => {
-  //     if (layerNo === 2) {
-  //       return "State";
-  //     } else if (layerNo === 3) {
-  //       return "Division";
-  //     } else {
-  //       return "";
-  //     }
-  //   }, [layerNo]);
-
-  //   const drillUp = useCallback(() => {
-  //     if (layerNo === 3) {
-  //       setCurrentLayer("Division");
-  //       setBounds(filteredDivisionBounds);
-  //       setFilteredDistrictsGeojson(null);
-  //       setLayerNo(layerNo - 1);
-  //     } else if (layerNo === 2) {
-  //       setCurrentLayer("State");
-  //       setBounds(indiaBounds);
-  //       setFilteredDivisionGeojson(null);
-  //       setLayerNo(layerNo - 1);
-  //       setSelectedFeature("Click Feature");
-  //     } else if (layerNo === 1) {
-  //       alert("No drill up possible at this level.");
-  //     }
-  //   }, [
-  //     layerNo,
-  //     setCurrentLayer,
-  //     setBounds,
-  //     setFilteredDistrictsGeojson,
-  //     setFilteredDivisionGeojson,
-  //     setLayerNo,
-  //     setSelectedFeature,
-  //   ]);
-
-  //   useEffect(() => {
-  //     setIsVisible(hasDrilledDown);
-  //   }, [hasDrilledDown]);
-
-  //   return (
-  //     <button
-  //       className={`drillup-btn ${isVisible ? "visible" : "hidden"}`}
-  //       onClick={drillUp}
-  //     >
-  //       Drill Up to {layerName} Level
-  //     </button>
-  //   );
-  // }
+  // This has been shifted to DrillUpButton.jsx component
 
   //===============================================================
   //===============================================================
