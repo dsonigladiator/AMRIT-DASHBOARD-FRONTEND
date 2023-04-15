@@ -55,7 +55,7 @@ const mapCenter = [23.5937, 80.9629];
 function LeafletMap() {
   // get data from context
   // geo data
-  const { statesData } = useContext(DataContext);
+  const { statesData, setStatesData } = useContext(DataContext);
   const { filteredDivisionsGeojson, setFilteredDivisionGeojson } =
     useContext(DataContext);
   const { filteredDistrictsGeojson, setFilteredDistrictsGeojson } =
@@ -87,6 +87,9 @@ function LeafletMap() {
 
   // some useState variables
   const { setHasDrilledDown } = useContext(DataContext);
+
+  // show or hide sensor layer
+  const { showSensorLayer, setShowSensorLayer } = useContext(DataContext);
 
   // global variables in this component
   var featureBounds;
@@ -128,6 +131,125 @@ function LeafletMap() {
   //
   //===============================================================
   //===============================================================
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////  INITIAL MAP LOAD  ////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // fetch and Load all state level data on initial map load
+  // fetch all geo data and AQ data and merge them
+  useEffect(() => {
+    // build AQDataQueryParams object
+    const AQDataQueryParams = {
+      admin_level: "state",
+      params: "pm2.5cnc,pm10cnc,temp,humidity,so2ppb,no2ppb,o3ppb,co",
+    };
+
+    // build sensorDataQueryParams object
+    const sensorDataQueryParams = {
+      admin_level: "state",
+    };
+
+    const getData = async () => {
+      // set loading state
+      setIsLoading(true);
+
+      // first fetch AQ Data
+      const AQData = await fetchAQData(AQDataQueryParams);
+      console.log("AQ Data: ");
+      console.log(AQData);
+
+      // fetch sensor data
+      const sensorData = await fetchSensorData(sensorDataQueryParams);
+      console.log("States Sensor Data: ");
+      console.log(sensorData);
+
+      // create GeoJSON FeatureCollection from the fetched sensor data
+      const sensorFeatures = sensorData.data
+        .filter((sensor) => sensor.lat && sensor.lon) // filter out invalid lat/lon values
+        .map((sensor) => ({
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [sensor.lon, sensor.lat],
+          },
+          properties: {
+            district_id: sensor.district_id,
+            division_id: sensor.division_id,
+            state_id: sensor.state_id,
+            imei_id: sensor.imei_id,
+            updated_time: sensor.updated_time,
+          },
+        }));
+      const sensorGeoJSON = {
+        type: "FeatureCollection",
+        features: sensorFeatures,
+      };
+      console.log("States Sensor GeoJSON: ");
+      console.log(sensorGeoJSON);
+
+      // then fetch Geo Data
+      const { data, statesLoading, statesError } = await getGeoDataV2(
+        stateDataLayerName
+      );
+
+      function mergeAQAndGeoData(AQData, data, featureName) {
+        if (!AQData || !data) {
+          console.log("Error: AQData or data is undefined");
+          return;
+        }
+
+        console.log("AQData length:", AQData.data.length);
+
+        data.features.forEach((feature) => {
+          const featureNameLower =
+            feature.properties[featureName].toLowerCase();
+          // console.log(`${featureName}: ${featureNameLower}`);
+
+          // Get all the AQ data points for the matching feature
+          const aqDataForFeature = AQData.data.filter(
+            (aqData) =>
+              aqData[`${featureName}_name`].toLowerCase() === featureNameLower
+          );
+          // console.log("aqDataForFeature:", aqDataForFeature);
+
+          if (aqDataForFeature.length > 0) {
+            if (!feature.properties.hasOwnProperty("param_values")) {
+              feature.properties.param_values = {};
+            }
+
+            // Set the AQ data values for each parameter
+            aqDataForFeature.forEach((aqData) => {
+              feature.properties.param_values[aqData.param_name] =
+                aqData.param_value;
+              feature.properties.number_of_sensors = aqData.number_of_sensors;
+            });
+          }
+        });
+
+        console.log("data after merging AQ and Geo Data");
+        console.log(data);
+
+        return data;
+      }
+
+      // Example usage:
+      const filteredStatesGeojson = mergeAQAndGeoData(AQData, data, "state");
+      setStatesData(filteredStatesGeojson);
+      setStatesSensorData(sensorGeoJSON);
+      setIsLoading(false);
+
+      while (statesLoading) {
+        console.log("Loading States Data...");
+      }
+
+      if (statesError) {
+        console.log("Error in loading States Data!");
+      }
+    };
+
+    getData();
+  }, []);
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////  STATE DRILL DOWN  ////////////////////////////////////////////////
@@ -617,20 +739,36 @@ function LeafletMap() {
       {/* Render map layers based on currentLayer value */}
 
       {/* State GeoJSON Layers */}
-      {currentLayer === "State" && <StateSensorsLayer />}
-      {currentLayer === "State" && <IndiaLayer />}
+      {currentLayer === "State" && (
+        <>
+          {showSensorLayer && <StateSensorsLayer />}
+          <IndiaLayer />
+        </>
+      )}
 
       {/* Division GeoJSON Layers */}
-      {currentLayer === "Division" && <DivisionSensorsLayer />}
-      {currentLayer === "Division" && <FilteredDivisionLayer />}
+      {currentLayer === "Division" && (
+        <>
+          {showSensorLayer && <DivisionSensorsLayer />}
+          <FilteredDivisionLayer />
+        </>
+      )}
 
       {/* Division GeoJSON Layers */}
-      {currentLayer === "District" && <DistrictSensorsLayer />}
-      {currentLayer === "District" && <FilteredDistrictLayer />}
+      {currentLayer === "District" && (
+        <>
+          {showSensorLayer && <DistrictSensorsLayer />}
+          <FilteredDistrictLayer />
+        </>
+      )}
 
       {/* Local GeoJSON Layers */}
-      {currentLayer === "Local" && <LocalSensorsLayer />}
-      {currentLayer === "Local" && <FilteredDistrictLayer />}
+      {currentLayer === "Local" && (
+        <>
+          {showSensorLayer && <LocalSensorsLayer />}
+          <FilteredDistrictLayer />
+        </>
+      )}
 
       {/* Fit Map Bounds */}
       {bounds.length !== 0 && <ZoomtoBounds bounds={bounds} />}

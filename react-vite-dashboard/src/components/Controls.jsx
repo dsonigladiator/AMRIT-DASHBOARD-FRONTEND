@@ -10,6 +10,9 @@ import DataContext from "../contexts/Data.Context.js";
 // Library Imports
 import DatePicker from "react-datepicker";
 
+// custom component imports
+import ShowSensorLayerButton from "./ShowSensorLayerButton";
+
 // style imports
 import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
@@ -86,6 +89,7 @@ const Controls = () => {
       <button className="submitbtn" type="submit">
         Submit
       </button>
+      <ShowSensorLayerButton />
     </form>
   );
 };
