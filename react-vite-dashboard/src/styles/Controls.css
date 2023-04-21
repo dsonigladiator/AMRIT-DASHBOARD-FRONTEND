@@ -4,6 +4,7 @@
   left: 5%;
   transform: translateY(-50%);
   z-index: 999;
+  max-width: 280px;
   background-color: rgba(222, 249, 219, 0.7);
   padding: 20px;
   border: 1px solid gray;
@@ -43,4 +44,20 @@
 
 .submitbtn:hover {
   background-color: #3e8e41;
+}
+
+.Controls .react-datepicker-wrapper {
+  display: inline-block;
+  width: auto;
+  vertical-align: middle;
+  margin-right: 10px; /* Add margin-right for spacing */
+}
+
+.datepicker-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  /* padding: 2px; */
+  width: 100%;
 }

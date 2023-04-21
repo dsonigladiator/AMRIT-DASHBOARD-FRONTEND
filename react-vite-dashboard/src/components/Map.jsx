@@ -54,6 +54,17 @@ const mapCenter = [23.5937, 80.9629];
 // Main Map component
 function LeafletMap() {
   // get data from context
+  // get start date and end date
+  const { startDate, setStartDate } = useContext(DataContext);
+  const { endDate, setEndDate } = useContext(DataContext);
+
+  // get sampling period and sampling value
+  const { samplingPeriod } = useContext(DataContext);
+  const { samplingValue } = useContext(DataContext);
+
+  // get AQ Data Query Params
+  const { AQDataQueryParams, setAQDataQueryParams } = useContext(DataContext);
+
   // geo data
   const { statesData, setStatesData } = useContext(DataContext);
   const { filteredDivisionsGeojson, setFilteredDivisionGeojson } =
@@ -140,6 +151,7 @@ function LeafletMap() {
   // fetch all geo data and AQ data and merge them
   useEffect(() => {
     // build AQDataQueryParams object
+    // build AQDataQueryParams object
     const AQDataQueryParams = {
       admin_level: "state",
       params: "pm2.5cnc,pm10cnc,temp,humidity,so2ppb,no2ppb,o3ppb,co",
@@ -161,8 +173,8 @@ function LeafletMap() {
 
       // fetch sensor data
       const sensorData = await fetchSensorData(sensorDataQueryParams);
-      console.log("States Sensor Data: ");
-      console.log(sensorData);
+      // console.log("States Sensor Data: ");
+      // console.log(sensorData);
 
       // create GeoJSON FeatureCollection from the fetched sensor data
       const sensorFeatures = sensorData.data
@@ -185,8 +197,8 @@ function LeafletMap() {
         type: "FeatureCollection",
         features: sensorFeatures,
       };
-      console.log("States Sensor GeoJSON: ");
-      console.log(sensorGeoJSON);
+      // console.log("States Sensor GeoJSON: ");
+      // console.log(sensorGeoJSON);
 
       // then fetch Geo Data
       const { data, statesLoading, statesError } = await getGeoDataV2(
@@ -199,7 +211,7 @@ function LeafletMap() {
           return;
         }
 
-        console.log("AQData length:", AQData.data.length);
+        // console.log("AQData length:", AQData.data.length);
 
         data.features.forEach((feature) => {
           const featureNameLower =
@@ -227,8 +239,8 @@ function LeafletMap() {
           }
         });
 
-        console.log("data after merging AQ and Geo Data");
-        console.log(data);
+        // console.log("data after merging AQ and Geo Data");
+        // console.log(data);
 
         return data;
       }
@@ -284,13 +296,13 @@ function LeafletMap() {
 
       // first fetch AQ Data
       const AQData = await fetchAQData(AQDataQueryParams);
-      // console.log("AQ Data: ");
-      // console.log(AQData);
+      console.log("AQ Data: ");
+      console.log(AQData);
 
       // then fetch sensor data for all divisions in the state
       const sensorData = await fetchSensorData(sensorDataQueryParams);
-      console.log("Sensor Data: ");
-      console.log(sensorData);
+      // console.log("Sensor Data: ");
+      // console.log(sensorData);
 
       /// create GeoJSON FeatureCollection from the fetched sensor data
       const sensorFeatures = sensorData.data
@@ -313,8 +325,8 @@ function LeafletMap() {
         type: "FeatureCollection",
         features: sensorFeatures,
       };
-      console.log("Sensor GeoJSON: ");
-      console.log(sensorGeoJSON);
+      // console.log("Sensor GeoJSON: ");
+      // console.log(sensorGeoJSON);
 
       // then fetch Geo Data
       const { data, isLoading, isError } = await getGeoDataV2(
@@ -328,7 +340,7 @@ function LeafletMap() {
           return;
         }
 
-        console.log("AQData length:", AQData.data.length);
+        // console.log("AQData length:", AQData.data.length);
 
         data.features.forEach((feature) => {
           const featureNameLower =
@@ -356,8 +368,8 @@ function LeafletMap() {
           }
         });
 
-        console.log("data after merging AQ and Geo Data");
-        console.log(data);
+        // console.log("data after merging AQ and Geo Data");
+        // console.log(data);
 
         return data;
       }
@@ -439,13 +451,13 @@ function LeafletMap() {
 
       // first fetch AQ Data
       const AQData = await fetchAQData(AQDataQueryParams);
-      // console.log("AQ Data: ");
-      // console.log(AQData);
+      console.log("AQ Data: ");
+      console.log(AQData);
 
       // then fetch sensor data for all districts in the selected division
       const sensorData = await fetchSensorData(sensorDataQueryParams);
-      console.log("Sensor Data: ");
-      console.log(sensorData);
+      // console.log("Sensor Data: ");
+      // console.log(sensorData);
 
       // create GeoJSON FeatureCollection from the fetched sensor data
       const sensorFeatures = sensorData.data
@@ -468,8 +480,8 @@ function LeafletMap() {
         type: "FeatureCollection",
         features: sensorFeatures,
       };
-      console.log("Sensor GeoJSON: ");
-      console.log(sensorGeoJSON);
+      // console.log("Sensor GeoJSON: ");
+      // console.log(sensorGeoJSON);
 
       // then fetch Geo Data
       const { data, isLoading, isError } = await getGeoDataV2(
@@ -483,7 +495,7 @@ function LeafletMap() {
           return;
         }
 
-        console.log("AQData length:", AQData.data.length);
+        // console.log("AQData length:", AQData.data.length);
 
         data.features.forEach((feature) => {
           const featureNameLower =
@@ -511,8 +523,8 @@ function LeafletMap() {
           }
         });
 
-        console.log("data after merging AQ and Geo Data");
-        console.log(data);
+        // console.log("data after merging AQ and Geo Data");
+        // console.log(data);
 
         return data;
       }
@@ -580,8 +592,8 @@ function LeafletMap() {
       setIsLoading(true);
       try {
         const sensorData = await fetchSensorData(sensorDataQueryParams);
-        console.log("Sensor Data: ");
-        console.log(sensorData);
+        // console.log("Sensor Data: ");
+        // console.log(sensorData);
 
         // create GeoJSON FeatureCollection from the fetched sensor data
         const sensorFeatures = sensorData.data
@@ -604,8 +616,8 @@ function LeafletMap() {
           type: "FeatureCollection",
           features: sensorFeatures,
         };
-        console.log("Sensor GeoJSON: ");
-        console.log(sensorGeoJSON);
+        // console.log("Sensor GeoJSON: ");
+        // console.log(sensorGeoJSON);
 
         setLocalSensorData(sensorGeoJSON);
         setBounds(featureBounds);

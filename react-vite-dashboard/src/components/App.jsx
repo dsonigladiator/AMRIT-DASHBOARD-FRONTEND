@@ -14,6 +14,9 @@ import Legend from "./Legend";
 // style imports
 import "../styles/styles.css";
 
+// helper functions
+import { formatStartDate, formatEndDate } from "../utils/formatDate";
+
 // Context Imports
 import DataContext from "../contexts/Data.Context";
 
@@ -22,8 +25,13 @@ export default function App() {
   // define global variables and state variables
   // these variables will be used in the entire app
 
-  // current date
-  const [currentDate, setCurrentDate] = useState(Date.now());
+  // start date and end date
+  const [startDate, setStartDate] = useState(formatStartDate(new Date()));
+  const [endDate, setEndDate] = useState(formatEndDate(new Date()));
+
+  // sampling period and sampling value
+  const [samplingPeriod, setSamplingPeriod] = useState("hours");
+  const [samplingValue, setSamplingValue] = useState(1);
 
   // selected feature and its name
   const [selectedFeature, setSelectedFeature] = useState(null);
@@ -32,6 +40,9 @@ export default function App() {
 
   // selected pollutant
   const [selectedPollutant, setSelectedPollutant] = useState("pm2.5cnc");
+
+  // object to store query parameters for AQ Data API
+  const [AQDataQueryParams, setAQDataQueryParams] = useState({});
 
   // layer number and current layer
   const [layerNo, setLayerNo] = useState(1);
@@ -65,8 +76,10 @@ export default function App() {
     // pass all the data and functions to the context provider
     <DataContext.Provider
       value={{
-        currentDate,
-        setCurrentDate,
+        startDate,
+        setStartDate,
+        endDate,
+        setEndDate,
         selectedFeature,
         setSelectedFeature,
         selectedFeatureName,
@@ -103,6 +116,12 @@ export default function App() {
         setLocalSensorData,
         showSensorLayer,
         setShowSensorLayer,
+        samplingPeriod,
+        setSamplingPeriod,
+        samplingValue,
+        setSamplingValue,
+        AQDataQueryParams,
+        setAQDataQueryParams,
       }}
     >
       <div className="App">
