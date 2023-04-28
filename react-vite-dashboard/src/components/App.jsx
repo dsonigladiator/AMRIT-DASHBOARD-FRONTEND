@@ -26,10 +26,15 @@ export default function App() {
   // these variables will be used in the entire app
 
   // start date and end date
+  const today = new Date(Date.now());
+  const formattedDate = today.toISOString().substring(0, 10);
+
   const [startDate, setStartDate] = useState(
-    formatStartDate(new Date("2023-04-28"))
+    formatStartDate(new Date(formattedDate))
   );
-  const [endDate, setEndDate] = useState(formatEndDate(new Date("2023-04-28")));
+  const [endDate, setEndDate] = useState(
+    formatEndDate(new Date(formattedDate))
+  );
 
   // sampling period and sampling value
   const [samplingPeriod, setSamplingPeriod] = useState("hours");

@@ -146,12 +146,12 @@ const Controls = () => {
             PM2.5
           </option>
           <option value="pm10cnc">PM10</option>
-          <option value="so2ppb">SO2</option>
-          <option value="no2ppb">NO2</option>
-          <option value="o3ppb">O3</option>
-          <option value="co">CO</option>
           <option value="temp">Temperature</option>
           <option value="humidity">Humidity</option>
+          {/* <option value="so2ppb">SO2</option>
+          <option value="no2ppb">NO2</option>
+          <option value="o3ppb">O3</option>
+          <option value="co">CO</option> */}
         </select>
       </div>
       <button className="submitbtn" type="submit">
