@@ -5,10 +5,11 @@
   transform: translateY(-50%);
   z-index: 999;
   max-width: 280px;
-  background-color: rgba(222, 249, 219, 0.7);
+  background-color: rgba(222, 249, 219, 0.8);
   padding: 20px;
-  border: 1px solid gray;
-  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  /* border: 1px solid gray; */
+  border-radius: 1rem;
 }
 
 .Controls label {

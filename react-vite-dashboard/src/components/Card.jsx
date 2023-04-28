@@ -68,19 +68,19 @@ const Card = () => {
             <div>{getPollutantValue("pm10cnc")}</div>
             <HealthBar value={getPollutantValue("pm10cnc") ?? 0} />
           </div>
-          <div className="data-item">
-            <div>SO2</div>
-            <div>{getPollutantValue("so2ppb")}</div>
-            <HealthBar value={getPollutantValue("so2ppb") ?? 0} />
-          </div>
-          <div className="data-item">
-            <div>Temp</div>
-            <div>{getPollutantValue("temp")}</div>
-            <HealthBar value={getPollutantValue("temp") ?? 0} />
-          </div>
         </div>
         <div className="data-row">
           <div className="data-item">
+            <div>Temperature</div>
+            <div>{getPollutantValue("temp")}</div>
+            <HealthBar value={getPollutantValue("temp") ?? 0} />
+          </div>
+          <div className="data-item">
+            <div>Humidity</div>
+            <div>{getPollutantValue("humidity")}</div>
+            <HealthBar value={getPollutantValue("humidity") ?? 0} />
+          </div>
+          {/* <div className="data-item">
             <div>NO2</div>
             <div>{getPollutantValue("no2ppb")}</div>
             <HealthBar value={getPollutantValue("no2ppb") ?? 0} />
@@ -96,10 +96,10 @@ const Card = () => {
             <HealthBar value={getPollutantValue("co") ?? 0} />
           </div>
           <div className="data-item">
-            <div>Humidity</div>
-            <div>{getPollutantValue("humidity")}</div>
-            <HealthBar value={getPollutantValue("humidity") ?? 0} />
-          </div>
+            <div>SO2</div>
+            <div>{getPollutantValue("so2ppb")}</div>
+            <HealthBar value={getPollutantValue("so2ppb") ?? 0} />
+          </div> */}
         </div>
       </div>
     </div>

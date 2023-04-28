@@ -55,8 +55,8 @@ const mapCenter = [23.5937, 80.9629];
 function LeafletMap() {
   // get data from context
   // get start date and end date
-  const { startDate, setStartDate } = useContext(DataContext);
-  const { endDate, setEndDate } = useContext(DataContext);
+  const { startDate } = useContext(DataContext);
+  const { endDate } = useContext(DataContext);
 
   // get sampling period and sampling value
   const { samplingPeriod } = useContext(DataContext);
@@ -152,10 +152,27 @@ function LeafletMap() {
   useEffect(() => {
     // build AQDataQueryParams object
     // build AQDataQueryParams object
-    const AQDataQueryParams = {
-      admin_level: "state",
-      params: "pm2.5cnc,pm10cnc,temp,humidity,so2ppb,no2ppb,o3ppb,co",
-    };
+    // const AQDataQueryParams = {
+    //   admin_level: "state",
+    //   params: "pm2.5cnc,pm10cnc,temp,humidity,so2ppb,no2ppb,o3ppb,co",
+    // };
+    let AQDataQueryParams = {};
+
+    if (startDate && endDate && samplingPeriod && samplingValue) {
+      AQDataQueryParams = {
+        admin_level: "state",
+        params: "pm2.5cnc,pm10cnc,temp,humidity,so2ppb,no2ppb,o3ppb,co",
+        from_date: startDate,
+        to_date: endDate,
+        sampling: samplingPeriod || "hours",
+        sampling_value: samplingValue || 1,
+      };
+    } else {
+      AQDataQueryParams = {
+        admin_level: "state",
+        params: "pm2.5cnc,pm10cnc,temp,humidity,so2ppb,no2ppb,o3ppb,co",
+      };
+    }
 
     // build sensorDataQueryParams object
     const sensorDataQueryParams = {
@@ -261,7 +278,7 @@ function LeafletMap() {
     };
 
     getData();
-  }, []);
+  }, [startDate, endDate, samplingPeriod, samplingValue]);
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////  STATE DRILL DOWN  ////////////////////////////////////////////////

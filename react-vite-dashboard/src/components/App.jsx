@@ -26,12 +26,14 @@ export default function App() {
   // these variables will be used in the entire app
 
   // start date and end date
-  const [startDate, setStartDate] = useState(formatStartDate(new Date()));
-  const [endDate, setEndDate] = useState(formatEndDate(new Date()));
+  const [startDate, setStartDate] = useState(
+    formatStartDate(new Date("2023-04-28"))
+  );
+  const [endDate, setEndDate] = useState(formatEndDate(new Date("2023-04-28")));
 
   // sampling period and sampling value
   const [samplingPeriod, setSamplingPeriod] = useState("hours");
-  const [samplingValue, setSamplingValue] = useState(1);
+  const [samplingValue, setSamplingValue] = useState(3);
 
   // selected feature and its name
   const [selectedFeature, setSelectedFeature] = useState(null);
