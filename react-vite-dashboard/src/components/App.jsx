@@ -25,7 +25,7 @@ export default function App() {
   // define global variables and state variables
   // these variables will be used in the entire app
 
-  // start date and end date
+  // start date and end date to today's date
   const today = new Date(Date.now());
   const formattedDate = today.toISOString().substring(0, 10);
 
