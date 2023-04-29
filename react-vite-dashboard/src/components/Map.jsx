@@ -300,9 +300,15 @@ function LeafletMap() {
       samplingPeriod,
       samplingValue
     );
+
+    const fallbackAQDataQueryParams = buildStateAQDataQueryParams(null);
+
     const sensorDataQueryParams = buildStateSensorDataQueryParams();
 
-    const AQData = await fetchAQData(AQDataQueryParams);
+    const AQData = await fetchAQData(
+      AQDataQueryParams,
+      fallbackAQDataQueryParams
+    );
     const sensorData = await fetchSensorData(sensorDataQueryParams);
     const sensorGeoJSON = createSensorGeoJSON(sensorData);
     const geoData = await fetchStateGeoData();

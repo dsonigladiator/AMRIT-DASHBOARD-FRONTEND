@@ -228,6 +228,7 @@ const Controls = () => {
           onDateChange={setStartDateValue}
           timeValue={startTimeValue}
           onTimeChange={setStartTimeValue}
+          minDate={new Date("2023-01-01")}
         />
 
         <DateTimePicker
@@ -237,6 +238,7 @@ const Controls = () => {
           onDateChange={setEndDateValue}
           timeValue={endTimeValue}
           onTimeChange={setEndTimeValue}
+          maxDate={new Date()}
         />
 
         <SamplingPeriodSelector
@@ -264,6 +266,8 @@ const DateTimePicker = ({
   onDateChange,
   timeValue,
   onTimeChange,
+  minDate,
+  maxDate,
 }) => (
   <>
     <label htmlFor={`${idPrefix}-date-time`}>{label}</label>
@@ -273,6 +277,8 @@ const DateTimePicker = ({
         id={`${idPrefix}-date`}
         selected={dateValue}
         onChange={onDateChange}
+        minDate={minDate}
+        maxDate={maxDate}
       />
       <DatePicker
         showTimeSelect
