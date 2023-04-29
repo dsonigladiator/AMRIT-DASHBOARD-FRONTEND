@@ -65,6 +65,11 @@ function LeafletMap() {
   // get AQ Data Query Params
   const { AQDataQueryParams, setAQDataQueryParams } = useContext(DataContext);
 
+  // geo data names
+  const { selectedState, setSelectedState } = useContext(DataContext);
+  const { selectedDivision, setSelectedDivision } = useContext(DataContext);
+  const { selectedDistrict, setSelectedDistrict } = useContext(DataContext);
+
   // geo data
   const { statesData, setStatesData } = useContext(DataContext);
   const { filteredDivisionsGeojson, setFilteredDivisionGeojson } =
@@ -652,6 +657,7 @@ function LeafletMap() {
 
     const mergedData = mergeAQAndGeoData(AQData, geoData, "division");
     handleStateDrillDownResults(mergedData, sensorGeoJSON, stateBounds);
+    setSelectedState(stateName);
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -861,6 +867,7 @@ function LeafletMap() {
 
     const mergedData = mergeAQAndGeoData(AQData, geoData, "district");
     handleDivisionDrillDownResults(mergedData, sensorGeoJSON, divisionBounds);
+    setSelectedDivision(divisionName);
   };
 
   const getDivisionInfo = (e) => {

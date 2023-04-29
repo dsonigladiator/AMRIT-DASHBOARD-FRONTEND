@@ -68,6 +68,7 @@ export default function App() {
   // geo data names
   const [selectedState, setSelectedState] = useState(null);
   const [selectedDivision, setSelectedDivision] = useState(null);
+  const [selectedDistrict, setSelectedDistrict] = useState(null);
 
   // geo data variables
   const [statesData, setStatesData] = useState([]);
@@ -113,6 +114,8 @@ export default function App() {
         setSelectedState,
         selectedDivision,
         setSelectedDivision,
+        selectedDistrict,
+        setSelectedDistrict,
         statesSensorData,
         setStatesSensorData,
         divisionsSensorData,
