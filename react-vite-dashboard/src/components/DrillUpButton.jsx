@@ -29,8 +29,8 @@ function DrillUpButton() {
   const [isVisible, setIsVisible] = useState(false);
 
   // geo data names
-  const { selectedStateName } = useContext(DataContext);
-  const { selectedDivisionName } = useContext(DataContext);
+  const { selectedState } = useContext(DataContext);
+  const { selectedDivision } = useContext(DataContext);
 
   // geo data
   const { filteredDivisionGeojson, setFilteredDivisionGeojson } =
@@ -66,7 +66,7 @@ function DrillUpButton() {
       setBounds(filteredDivisionBounds);
       setFilteredDistrictsGeojson(null);
       setLayerNo(layerNo - 1);
-      setSelectedFeatureName(selectedDivisionName);
+      setSelectedFeatureName(selectedDivision);
     }
     // division layer -> state layer
     else if (layerNo === 2) {
@@ -74,7 +74,7 @@ function DrillUpButton() {
       setBounds(indiaBounds);
       setFilteredDivisionGeojson(null);
       setLayerNo(layerNo - 1);
-      setSelectedFeatureName(selectedStateName);
+      setSelectedFeatureName(selectedState);
       setHasDrilledDown(false);
     }
     // state layer -> no drill up possible

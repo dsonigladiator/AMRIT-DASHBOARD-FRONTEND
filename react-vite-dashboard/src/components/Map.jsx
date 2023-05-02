@@ -657,6 +657,8 @@ function LeafletMap() {
 
     const mergedData = mergeAQAndGeoData(AQData, geoData, "division");
     handleStateDrillDownResults(mergedData, sensorGeoJSON, stateBounds);
+
+    // Update selected state name
     setSelectedState(stateName);
   };
 
