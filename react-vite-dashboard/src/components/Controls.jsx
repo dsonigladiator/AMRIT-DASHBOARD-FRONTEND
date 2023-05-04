@@ -90,6 +90,7 @@ const Controls = () => {
           timeValue={startTimeValue}
           onTimeChange={setStartTimeValue}
           minDate={new Date("2023-01-01")}
+          maxDate={new Date()}
         />
 
         <DateTimePicker
@@ -99,6 +100,7 @@ const Controls = () => {
           onDateChange={setEndDateValue}
           timeValue={endTimeValue}
           onTimeChange={setEndTimeValue}
+          minDate={new Date("2023-01-01")}
           maxDate={new Date()}
         />
 

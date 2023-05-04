@@ -152,141 +152,7 @@ function LeafletMap() {
   ////////////////////////////////////////////  INITIAL MAP LOAD  ////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  // // fetch and Load all state level data on initial map load
-  // // fetch all geo data and AQ data and merge them
-  // useEffect(() => {
-  //   // build AQDataQueryParams object
-  //   // build AQDataQueryParams object
-  //   // const AQDataQueryParams = {
-  //   //   admin_level: "state",
-  //   //   params: "pm2.5cnc,pm10cnc,temp,humidity,so2ppb,no2ppb,o3ppb,co",
-  //   // };
-  //   let AQDataQueryParams = {};
-
-  //   if (startDate && endDate && samplingPeriod && samplingValue) {
-  //     AQDataQueryParams = {
-  //       admin_level: "state",
-  //       params: "pm2.5cnc,pm10cnc,temp,humidity,so2ppb,no2ppb,o3ppb,co",
-  //       from_date: startDate,
-  //       to_date: endDate,
-  //       sampling: samplingPeriod || "hours",
-  //       sampling_value: samplingValue || 1,
-  //     };
-  //   } else {
-  //     AQDataQueryParams = {
-  //       admin_level: "state",
-  //       params: "pm2.5cnc,pm10cnc,temp,humidity,so2ppb,no2ppb,o3ppb,co",
-  //     };
-  //   }
-
-  //   // build sensorDataQueryParams object
-  //   const sensorDataQueryParams = {
-  //     admin_level: "state",
-  //   };
-
-  //   const getData = async () => {
-  //     // set loading state
-  //     setIsLoading(true);
-
-  //     // first fetch AQ Data
-  //     const AQData = await fetchAQData(AQDataQueryParams);
-  //     console.log("AQ Data: ");
-  //     console.log(AQData);
-
-  //     // fetch sensor data
-  //     const sensorData = await fetchSensorData(sensorDataQueryParams);
-  //     // console.log("States Sensor Data: ");
-  //     // console.log(sensorData);
-
-  //     // create GeoJSON FeatureCollection from the fetched sensor data
-  //     const sensorFeatures = sensorData.data
-  //       .filter((sensor) => sensor.lat && sensor.lon) // filter out invalid lat/lon values
-  //       .map((sensor) => ({
-  //         type: "Feature",
-  //         geometry: {
-  //           type: "Point",
-  //           coordinates: [sensor.lon, sensor.lat],
-  //         },
-  //         properties: {
-  //           district_id: sensor.district_id,
-  //           division_id: sensor.division_id,
-  //           state_id: sensor.state_id,
-  //           imei_id: sensor.imei_id,
-  //           updated_time: sensor.updated_time,
-  //         },
-  //       }));
-  //     const sensorGeoJSON = {
-  //       type: "FeatureCollection",
-  //       features: sensorFeatures,
-  //     };
-  //     // console.log("States Sensor GeoJSON: ");
-  //     // console.log(sensorGeoJSON);
-
-  //     // then fetch Geo Data
-  //     const { data, statesLoading, statesError } = await getGeoDataV2(
-  //       stateDataLayerName
-  //     );
-
-  //     function mergeAQAndGeoData(AQData, data, featureName) {
-  //       if (!AQData || !data) {
-  //         console.log("Error: AQData or data is undefined");
-  //         return;
-  //       }
-
-  //       // console.log("AQData length:", AQData.data.length);
-
-  //       data.features.forEach((feature) => {
-  //         const featureNameLower =
-  //           feature.properties[featureName].toLowerCase();
-  //         // console.log(`${featureName}: ${featureNameLower}`);
-
-  //         // Get all the AQ data points for the matching feature
-  //         const aqDataForFeature = AQData.data.filter(
-  //           (aqData) =>
-  //             aqData[`${featureName}_name`].toLowerCase() === featureNameLower
-  //         );
-  //         // console.log("aqDataForFeature:", aqDataForFeature);
-
-  //         if (aqDataForFeature.length > 0) {
-  //           if (!feature.properties.hasOwnProperty("param_values")) {
-  //             feature.properties.param_values = {};
-  //           }
-
-  //           // Set the AQ data values for each parameter
-  //           aqDataForFeature.forEach((aqData) => {
-  //             feature.properties.param_values[aqData.param_name] =
-  //               aqData.param_value;
-  //             feature.properties.number_of_sensors = aqData.number_of_sensors;
-  //           });
-  //         }
-  //       });
-
-  //       // console.log("data after merging AQ and Geo Data");
-  //       // console.log(data);
-
-  //       return data;
-  //     }
-
-  //     // Example usage:
-  //     const filteredStatesGeojson = mergeAQAndGeoData(AQData, data, "state");
-  //     setStatesData(filteredStatesGeojson);
-  //     setStatesSensorData(sensorGeoJSON);
-  //     setIsLoading(false);
-
-  //     while (statesLoading) {
-  //       console.log("Loading States Data...");
-  //     }
-
-  //     if (statesError) {
-  //       console.log("Error in loading States Data!");
-  //     }
-  //   };
-
-  //   getData();
-  // }, [startDate, endDate, samplingPeriod, samplingValue]);
-
-  // Fetch and load all state level data on initial map load
-  // Fetch all geo data and AQ data and merge them
+  // function to fetch data for initial map load
   const fetchData = async (
     setIsLoading,
     setStatesData,
@@ -428,157 +294,8 @@ function LeafletMap() {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////  STATE DRILL DOWN  ////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   // function to handle double-click on State
-  // function stateDrillDown(e) {
-  //   // const stateName = e.target.feature.properties.state.toLowerCase();
-  //   const stateName = e.target.feature.properties.state;
-  //   const stateID = e.target.feature.properties.id;
-  //   var clickedFeature = e;
-  //   var stateBounds = e.target._bounds;
-  //   featureBounds = stateBounds;
-
-  //   const cql_filter = `state=\'${stateName.toUpperCase()}\'`;
-
-  //   // build AQDataQueryParams object
-  //   const AQDataQueryParams = {
-  //     admin_level: "division",
-  //     params: "pm2.5cnc,pm10cnc,temp,humidity,so2ppb,no2ppb,o3ppb,co",
-  //   };
-
-  //   // build sensorDataQueryParams object
-  //   const sensorDataQueryParams = {
-  //     admin_level: "state",
-  //     admin_id: stateID,
-  //   };
-
-  //   // fetch division data and do something with it
-  //   const getData = async () => {
-  //     // set loading state
-  //     setIsLoading(true);
-
-  //     // first fetch AQ Data
-  //     const AQData = await fetchAQData(AQDataQueryParams);
-  //     console.log("AQ Data: ");
-  //     console.log(AQData);
-
-  //     // then fetch sensor data for all divisions in the state
-  //     const sensorData = await fetchSensorData(sensorDataQueryParams);
-  //     // console.log("Sensor Data: ");
-  //     // console.log(sensorData);
-
-  //     /// create GeoJSON FeatureCollection from the fetched sensor data
-  //     const sensorFeatures = sensorData.data
-  //       .filter((sensor) => sensor.lat && sensor.lon) // filter out invalid lat/lon values
-  //       .map((sensor) => ({
-  //         type: "Feature",
-  //         geometry: {
-  //           type: "Point",
-  //           coordinates: [sensor.lon, sensor.lat],
-  //         },
-  //         properties: {
-  //           district_id: sensor.district_id,
-  //           division_id: sensor.division_id,
-  //           state_id: sensor.state_id,
-  //           imei_id: sensor.imei_id,
-  //           updated_time: sensor.updated_time,
-  //         },
-  //       }));
-  //     const sensorGeoJSON = {
-  //       type: "FeatureCollection",
-  //       features: sensorFeatures,
-  //     };
-  //     // console.log("Sensor GeoJSON: ");
-  //     // console.log(sensorGeoJSON);
-
-  //     // then fetch Geo Data
-  //     const { data, isLoading, isError } = await getGeoDataV2(
-  //       divisionDataLayerName,
-  //       cql_filter
-  //     );
-
-  //     function mergeAQAndGeoData(AQData, data, featureName) {
-  //       if (!AQData || !data) {
-  //         console.log("Error: AQData or data is undefined");
-  //         return;
-  //       }
-
-  //       // console.log("AQData length:", AQData.data.length);
-
-  //       data.features.forEach((feature) => {
-  //         const featureNameLower =
-  //           feature.properties[featureName].toLowerCase();
-  //         // console.log(`${featureName}: ${featureNameLower}`);
-
-  //         // Get all the AQ data points for the matching feature
-  //         const aqDataForFeature = AQData.data.filter(
-  //           (aqData) =>
-  //             aqData[`${featureName}_name`].toLowerCase() === featureNameLower
-  //         );
-  //         // console.log("aqDataForFeature:", aqDataForFeature);
-
-  //         if (aqDataForFeature.length > 0) {
-  //           if (!feature.properties.hasOwnProperty("param_values")) {
-  //             feature.properties.param_values = {};
-  //           }
-
-  //           // Set the AQ data values for each parameter
-  //           aqDataForFeature.forEach((aqData) => {
-  //             feature.properties.param_values[aqData.param_name] =
-  //               aqData.param_value;
-  //             feature.properties.number_of_sensors = aqData.number_of_sensors;
-  //           });
-  //         }
-  //       });
-
-  //       // console.log("data after merging AQ and Geo Data");
-  //       // console.log(data);
-
-  //       return data;
-  //     }
-
-  //     // Example usage:
-  //     const filteredDivisionGeojson = mergeAQAndGeoData(
-  //       AQData,
-  //       data,
-  //       "division"
-  //     );
-  //     setFilteredDivisionGeojson(filteredDivisionGeojson);
-  //     setDivisionsSensorData(sensorGeoJSON);
-  //     setIsLoading(false);
-
-  //     // handle data loading and error state
-  //     if (isLoading) {
-  //       // Handle loading state
-  //       console.log("Loading Division Data...");
-  //     } else if (isError) {
-  //       // Handle error state
-  //       console.log("Error in fetching Division Data...");
-  //     } else {
-  //       // filteredDivisionsGeojson contains the data you need
-  //       if (data.features.length > 0) {
-  //         setCurrentLayer("Division");
-  //         setBounds(featureBounds);
-  //         //set hasDrilledDown to true
-  //         setHasDrilledDown(true);
-  //       } else {
-  //         alert("No divisions found for the selected State");
-  //         setSelectedFeature(null);
-  //         setSelectedFeatureName(null);
-  //         setHasDrilledDown(false);
-  //         return;
-  //       }
-  //     }
-
-  //     // increment layer number, new val: 2
-  //     setLayerNo(layerNo + 1);
-
-  //     // console.log(layerNo);
-  //   };
-
-  //   // call getData function
-  //   getData();
-  // }
-
   const getStateInfo = (e) => {
     const stateName = e.target.feature.properties.state;
     const stateID = e.target.feature.properties.id;
@@ -587,11 +304,29 @@ function LeafletMap() {
     return { stateName, stateID, stateBounds };
   };
 
-  const buildDivisionAQDataQueryParams = (adminLevel) => {
-    return {
+  const buildDivisionAQDataQueryParams = (
+    adminLevel,
+    startDate,
+    endDate,
+    samplingPeriod,
+    samplingValue
+  ) => {
+    let AQDataQueryParams = {
       admin_level: adminLevel,
       params: "pm2.5cnc,pm10cnc,temp,humidity,so2ppb,no2ppb,o3ppb,co",
     };
+
+    if (startDate && endDate && samplingPeriod && samplingValue) {
+      AQDataQueryParams = {
+        ...AQDataQueryParams,
+        from_date: startDate,
+        to_date: endDate,
+        sampling: samplingPeriod || "hours",
+        sampling_value: samplingValue || 1,
+      };
+    }
+
+    return AQDataQueryParams;
   };
 
   const buildDivisionSensorDataQueryParams = (adminLevel, adminID) => {
@@ -639,7 +374,14 @@ function LeafletMap() {
 
     const cql_filter = `state=\'${stateName.toUpperCase()}\'`;
 
-    const AQDataQueryParams = buildDivisionAQDataQueryParams("division");
+    const AQDataQueryParams = buildDivisionAQDataQueryParams(
+      "division",
+      startDate,
+      endDate,
+      samplingPeriod,
+      samplingValue
+    );
+
     const sensorDataQueryParams = buildDivisionSensorDataQueryParams(
       "state",
       stateID
@@ -647,7 +389,10 @@ function LeafletMap() {
 
     setIsLoading(true);
 
-    const AQData = await fetchAQData(AQDataQueryParams);
+    const AQData = await fetchAQData(
+      AQDataQueryParams,
+      buildDivisionAQDataQueryParams("division", null)
+    );
     const sensorData = await fetchSensorData(sensorDataQueryParams);
     const sensorGeoJSON = createSensorGeoJSON(sensorData);
     const geoData = await fetchDivisionGeoData(
@@ -665,163 +410,31 @@ function LeafletMap() {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////  DIVISION DRILL DOWN  /////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   // function to handle double-click on a Division
-  // function divisionDrillDown(e) {
-  //   var districtData;
-  //   const divisionID = e.target.feature.properties.id;
-  //   const divisionName = e.target.feature.properties.division;
-  //   var clickedFeature = e;
-  //   // setSelectedFeature(divisionName);
-  //   var divisionBounds = e.target._bounds;
-  //   featureBounds = divisionBounds;
-
-  //   const cql_filter = `division=\'${divisionName}\'`;
-
-  //   // build AQDataQueryParams object
-  //   const AQDataQueryParams = {
-  //     admin_level: "district",
-  //     params: "pm2.5cnc,pm10cnc,temp,humidity,so2ppb,no2ppb,o3ppb,co",
-  //   };
-
-  //   // build sensorDataQueryParams object
-  //   const sensorDataQueryParams = {
-  //     admin_level: "division",
-  //     admin_id: divisionID,
-  //   };
-
-  //   // fetch division data and do something with it
-  //   const getData = async () => {
-  //     // set loading state
-  //     setIsLoading(true);
-
-  //     // first fetch AQ Data
-  //     const AQData = await fetchAQData(AQDataQueryParams);
-  //     console.log("AQ Data: ");
-  //     console.log(AQData);
-
-  //     // then fetch sensor data for all districts in the selected division
-  //     const sensorData = await fetchSensorData(sensorDataQueryParams);
-  //     // console.log("Sensor Data: ");
-  //     // console.log(sensorData);
-
-  //     // create GeoJSON FeatureCollection from the fetched sensor data
-  //     const sensorFeatures = sensorData.data
-  //       .filter((sensor) => sensor.lat && sensor.lon) // filter out invalid lat/lon values
-  //       .map((sensor) => ({
-  //         type: "Feature",
-  //         geometry: {
-  //           type: "Point",
-  //           coordinates: [sensor.lon, sensor.lat],
-  //         },
-  //         properties: {
-  //           district_id: sensor.district_id,
-  //           division_id: sensor.division_id,
-  //           state_id: sensor.state_id,
-  //           imei_id: sensor.imei_id,
-  //           updated_time: sensor.updated_time,
-  //         },
-  //       }));
-  //     const sensorGeoJSON = {
-  //       type: "FeatureCollection",
-  //       features: sensorFeatures,
-  //     };
-  //     // console.log("Sensor GeoJSON: ");
-  //     // console.log(sensorGeoJSON);
-
-  //     // then fetch Geo Data
-  //     const { data, isLoading, isError } = await getGeoDataV2(
-  //       districtDataLayerName,
-  //       cql_filter
-  //     );
-
-  //     function mergeAQAndGeoData(AQData, data, featureName) {
-  //       if (!AQData || !data) {
-  //         console.log("Error: AQData or data is undefined");
-  //         return;
-  //       }
-
-  //       // console.log("AQData length:", AQData.data.length);
-
-  //       data.features.forEach((feature) => {
-  //         const featureNameLower =
-  //           feature.properties[featureName].toLowerCase();
-  //         // console.log(`${featureName}: ${featureNameLower}`);
-
-  //         // Get all the AQ data points for the matching feature
-  //         const aqDataForFeature = AQData.data.filter(
-  //           (aqData) =>
-  //             aqData[`${featureName}_name`].toLowerCase() === featureNameLower
-  //         );
-  //         // console.log("aqDataForFeature:", aqDataForFeature);
-
-  //         if (aqDataForFeature.length > 0) {
-  //           if (!feature.properties.hasOwnProperty("param_values")) {
-  //             feature.properties.param_values = {};
-  //           }
-
-  //           // Set the AQ data values for each parameter
-  //           aqDataForFeature.forEach((aqData) => {
-  //             feature.properties.param_values[aqData.param_name] =
-  //               aqData.param_value;
-  //             feature.properties.number_of_sensors = aqData.number_of_sensors;
-  //           });
-  //         }
-  //       });
-
-  //       // console.log("data after merging AQ and Geo Data");
-  //       // console.log(data);
-
-  //       return data;
-  //     }
-
-  //     // Example usage:
-  //     const filteredDistrictsGeojson = mergeAQAndGeoData(
-  //       AQData,
-  //       data,
-  //       "district"
-  //     );
-  //     setFilteredDistrictsGeojson(filteredDistrictsGeojson);
-  //     setDistrictsSensorData(sensorGeoJSON);
-  //     setIsLoading(false);
-
-  //     // handle data loading and error state
-  //     if (isLoading) {
-  //       // Handle loading state
-  //       console.log("Loading District Data...");
-  //     } else if (isError) {
-  //       // Handle error state
-  //       console.log("Error in fetching District Data...");
-  //     } else {
-  //       // filteredDivisionsGeojson contains the data you need
-  //       if (data.features.length > 0) {
-  //         setCurrentLayer("District");
-  //         setBounds(featureBounds);
-  //         //set hasDrilledDown to true
-  //         setHasDrilledDown(true);
-  //       } else {
-  //         alert("No districts found for the selected Division");
-  //         setSelectedFeature(null);
-  //         setSelectedFeatureName(null);
-  //         setHasDrilledDown(false);
-  //         return;
-  //       }
-  //     }
-
-  //     // increment layer number, new val: 2
-  //     setLayerNo(layerNo + 1);
-
-  //     // console.log(layerNo);
-  //   };
-
-  //   // call getData function
-  //   getData();
-  // }
-
-  const createDistrictAQDataQueryParams = (adminLevel) => {
-    return {
+  const buildDistrictAQDataQueryParams = (
+    adminLevel,
+    startDate,
+    endDate,
+    samplingPeriod,
+    samplingValue
+  ) => {
+    let AQDataQueryParams = {
       admin_level: adminLevel,
       params: "pm2.5cnc,pm10cnc,temp,humidity,so2ppb,no2ppb,o3ppb,co",
     };
+
+    if (startDate && endDate && samplingPeriod && samplingValue) {
+      AQDataQueryParams = {
+        ...AQDataQueryParams,
+        from_date: startDate,
+        to_date: endDate,
+        sampling: samplingPeriod || "hours",
+        sampling_value: samplingValue || 1,
+      };
+    }
+
+    return AQDataQueryParams;
   };
 
   const buildDistrictSensorDataQueryParams = (adminLevel, adminID) => {
@@ -851,7 +464,13 @@ function LeafletMap() {
 
     const cql_filter = `division=\'${divisionName}\'`;
 
-    const AQDataQueryParams = createDistrictAQDataQueryParams("district");
+    const AQDataQueryParams = buildDistrictAQDataQueryParams(
+      "district",
+      startDate,
+      endDate,
+      samplingPeriod,
+      samplingValue
+    );
     const sensorDataQueryParams = buildDistrictSensorDataQueryParams(
       "division",
       divisionID
@@ -859,7 +478,10 @@ function LeafletMap() {
 
     setIsLoading(true);
 
-    const AQData = await fetchAQData(AQDataQueryParams);
+    const AQData = await fetchAQData(
+      AQDataQueryParams,
+      buildDistrictAQDataQueryParams("district", null)
+    );
     const sensorData = await fetchSensorData(sensorDataQueryParams);
     const sensorGeoJSON = createSensorGeoJSON(sensorData);
     const geoData = await fetchDistrictGeoData(

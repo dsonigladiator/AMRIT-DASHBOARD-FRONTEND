@@ -1,5 +1,5 @@
-// This function rounds off the digits of a number to 2 decimal places
+// This function rounds off the digits of a number to have 0 decimal places.
 
-export default function roundOffDigits(num) {
-    return Math.round((num + Number.EPSILON) * 100) / 100;
+export default function roundOffFull(num) {
+    return Math.round(num);
 };
