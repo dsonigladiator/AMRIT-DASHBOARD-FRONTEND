@@ -3,8 +3,8 @@
 // util imports
 import buildSensorURL from "./buildSensorURL.js";
 
-// function to fetch the sensor IMEI data from the API asynchonously
-async function fetchSensorData(queryParams) {
+// function to fetch the sensor IMEI Geo data from the API asynchonously
+async function fetchSensorGeoData(queryParams) {
 
     // Define the base URL and default parameters for Sensor API
     const baseURL = "http://18.221.91.95:81/devices";
@@ -48,4 +48,4 @@ async function fetchSensorData(queryParams) {
     }
 }
 
-export default fetchSensorData;
+export default fetchSensorGeoData;

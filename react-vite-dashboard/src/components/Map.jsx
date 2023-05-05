@@ -25,7 +25,8 @@ import ZoomtoBounds from "./ZoomToBounds";
 // api imports
 import fetchAQData from "../utils/fetchAQData.js";
 import getGeoDataV2 from "../utils/fetchGeoDataV2.js";
-import fetchSensorData from "../utils/fetchSensorData.js";
+import fetchSensorGeoData from "../utils/fetchSensorGeoData.js";
+import fetchSensorAQData from "../utils/fetchSensorAQData.js";
 
 // style imports
 import "../styles/Map.css";
@@ -165,6 +166,7 @@ function LeafletMap() {
     // Set loading state
     setIsLoading(true);
 
+    // this will be used for AQ Data of polygons as well as sensors
     const AQDataQueryParams = buildStateAQDataQueryParams(
       startDate,
       endDate,
@@ -172,16 +174,24 @@ function LeafletMap() {
       samplingValue
     );
 
+    // this will be used for AQ Data of polygons as well as sensors
     const fallbackAQDataQueryParams = buildStateAQDataQueryParams(null);
 
-    const sensorDataQueryParams = buildStateSensorDataQueryParams();
+    const sensorGeoDataQueryParams = buildStateSensorGeoDataQueryParams();
 
     const AQData = await fetchAQData(
       AQDataQueryParams,
       fallbackAQDataQueryParams
     );
-    const sensorData = await fetchSensorData(sensorDataQueryParams);
-    const sensorGeoJSON = createSensorGeoJSON(sensorData);
+    const sensorGeoData = await fetchSensorGeoData(sensorGeoDataQueryParams);
+    console.log("Sensor Geo Data: ", sensorGeoData);
+
+    const sensorAQData = await fetchSensorAQData(
+      AQDataQueryParams,
+      fallbackAQDataQueryParams
+    );
+    console.log("Sensor AQ Data: ", sensorAQData);
+    const sensorGeoJSON = createSensorGeoJSON(sensorGeoData);
     const geoData = await fetchStateGeoData();
 
     const mergedData = mergeAQAndGeoData(AQData, geoData, "state");
@@ -214,7 +224,7 @@ function LeafletMap() {
     return AQDataQueryParams;
   };
 
-  const buildStateSensorDataQueryParams = () => {
+  const buildStateSensorGeoDataQueryParams = () => {
     return {
       admin_level: "state",
     };
@@ -329,7 +339,7 @@ function LeafletMap() {
     return AQDataQueryParams;
   };
 
-  const buildDivisionSensorDataQueryParams = (adminLevel, adminID) => {
+  const buildDivisionSensorGeoDataQueryParams = (adminLevel, adminID) => {
     const queryParams = {
       admin_level: adminLevel,
     };
@@ -382,7 +392,7 @@ function LeafletMap() {
       samplingValue
     );
 
-    const sensorDataQueryParams = buildDivisionSensorDataQueryParams(
+    const sensorGeoDataQueryParams = buildDivisionSensorGeoDataQueryParams(
       "state",
       stateID
     );
@@ -393,8 +403,8 @@ function LeafletMap() {
       AQDataQueryParams,
       buildDivisionAQDataQueryParams("division", null)
     );
-    const sensorData = await fetchSensorData(sensorDataQueryParams);
-    const sensorGeoJSON = createSensorGeoJSON(sensorData);
+    const sensorGeoData = await fetchSensorGeoData(sensorGeoDataQueryParams);
+    const sensorGeoJSON = createSensorGeoJSON(sensorGeoData);
     const geoData = await fetchDivisionGeoData(
       divisionDataLayerName,
       cql_filter
@@ -437,7 +447,7 @@ function LeafletMap() {
     return AQDataQueryParams;
   };
 
-  const buildDistrictSensorDataQueryParams = (adminLevel, adminID) => {
+  const buildDistrictSensorGeoDataQueryParams = (adminLevel, adminID) => {
     return {
       admin_level: adminLevel,
       admin_id: adminID,
@@ -471,7 +481,7 @@ function LeafletMap() {
       samplingPeriod,
       samplingValue
     );
-    const sensorDataQueryParams = buildDistrictSensorDataQueryParams(
+    const sensorGeoDataQueryParams = buildDistrictSensorGeoDataQueryParams(
       "division",
       divisionID
     );
@@ -482,8 +492,8 @@ function LeafletMap() {
       AQDataQueryParams,
       buildDistrictAQDataQueryParams("district", null)
     );
-    const sensorData = await fetchSensorData(sensorDataQueryParams);
-    const sensorGeoJSON = createSensorGeoJSON(sensorData);
+    const sensorGeoData = await fetchSensorGeoData(sensorGeoDataQueryParams);
+    const sensorGeoJSON = createSensorGeoJSON(sensorGeoData);
     const geoData = await fetchDistrictGeoData(
       districtDataLayerName,
       cql_filter
@@ -536,7 +546,7 @@ function LeafletMap() {
     featureBounds = e.target._bounds;
 
     // fetch local sensor data for the selected district
-    const sensorDataQueryParams = {
+    const sensorGeoDataQueryParams = {
       admin_level: "district",
       district_id: districtID,
     };
@@ -544,7 +554,7 @@ function LeafletMap() {
     const getData = async () => {
       setIsLoading(true);
       try {
-        const sensorData = await fetchSensorData(sensorDataQueryParams);
+        const sensorData = await fetchSensorGeoData(sensorGeoDataQueryParams);
         // console.log("Sensor Data: ");
         // console.log(sensorData);
 
